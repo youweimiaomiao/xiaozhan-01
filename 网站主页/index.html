@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>幼薇喵的小站 · 二次元大学生的自留地</title>
+<meta name="description" content="幼薇喵的个人小站：运维教程、自研游戏、折腾记录与 AI 工具箱。">
+<meta name="theme-color" content="#0f1220">
+<link rel="canonical" href="https://youweimiao.com/">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+<script>
+// 主题预判：在页面渲染前定好昼夜，避免闪屏
+// 优先级：URL参数 > 访客上次手动选择 > 访客系统主题
+(function () {
+  var t = null;
+  try { t = localStorage.getItem("home_theme"); } catch (e) {}
+  var q = new URLSearchParams(location.search).get("theme");
+  var light;
+  if (q === "light") light = true;
+  else if (q === "dark") light = false;
+  else if (t === "light") light = true;
+  else if (t === "dark") light = false;
+  else light = !(matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+  if (light) document.documentElement.classList.add("want-light");
+})();
+</script>
+</head>
+<body>
+<script>
+// 立即给 body 上主题类（body 标签刚生成时执行）
+if (document.documentElement.classList.contains("want-light")) {
+  document.body.classList.add("light");
+}
+</script>
+<div id="readBar"></div>
+<canvas id="stars"></canvas>
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
+<div class="orb orb-c"></div>
+
+<nav class="topnav">
+  <a class="brand" href="#top">🫧 幼薇喵</a>
+  <nav class="nav-links">
+    <a data-sec="top" href="#top">首页</a>
+    <a data-sec="portal" href="#portal">导航</a>
+    <a data-sec="gallery" href="#gallery">图鉴</a>
+    <a href="/jiaocheng/">教程</a>
+    <a href="/potato/">游戏</a>
+    <a href="/blog/">博客</a>
+    <a data-sec="about" href="#about">关于</a>
+    <button id="themeBtn" title="切换昼夜">🌙</button>
+  </nav>
+</nav>
+
+<header class="hero" id="top">
+  <img class="mascot mascot-day" src="吉祥物去底.png" alt="大肥鱼吉祥物">
+  <img class="mascot mascot-night" src="吉祥物去底-夜间.png" alt="大肥鱼吉祥物">
+  <p class="badge">欢迎来到幼薇喵的小站</p>
+  <h1>幼薇喵<span class="cursor">·</span></h1>
+  <p class="sub">我<span id="typewriter"></span><span class="caret">▌</span></p>
+  <p class="hint">一只喜欢二次元的计算机系大学生 · 和 AI 搭子大肥鱼一起折腾的小窝</p>
+  <a class="cta" href="#portal">开始逛逛 ↓</a>
+</header>
+
+<main>
+  <!-- 门户导航 -->
+  <section id="portal">
+    <h2 class="sec-title">🗺️ 站内导航</h2>
+    <p class="sec-sub">想去哪儿，点哪张卡</p>
+    <div class="cards">
+      <a class="pcard" href="/jiaocheng/">
+        <img class="pavatar" src="鲸鱼娘.png" alt="教程">
+        <h3>📖 小服务器大冒险</h3>
+        <p>图形化运维教程：SSH / 上传 / nginx / 域名 / HTTPS，六步把作品挂到公网。含实战案例和彩蛋终端。</p>
+        <span class="go">去看看 →</span>
+      </a>
+      <a class="pcard" href="/potato/">
+        <img class="pavatar" src="favicon.png" alt="游戏">
+        <h3>🥔 土豆兄弟 · 前5波复刻</h3>
+        <p>自研 Godot 小游戏，自动战斗、商店、升级四选一。网页版需要 HTTPS 环境（详见教程第5、6步）。</p>
+        <span class="go">去玩玩 →</span>
+      </a>
+      <a class="pcard" href="/blog/">
+        <img class="pavatar" src="大肥鱼去底.png" alt="博客">
+        <h3>📝 老博客</h3>
+        <p>服务器上的老住户，一篇 Ubuntu 主题个人博客，暂时保留原样。</p>
+        <span class="go">去翻翻 →</span>
+      </a>
+      <a class="pcard" href="https://github.com/youweimiaomiao/cun" target="_blank">
+        <div class="picon">🐙</div>
+        <h3>GitHub 仓库</h3>
+        <p>游戏源码、教程源码、AI 工具箱脚本，全在这里开源。</p>
+        <span class="go">去围观 →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 时间线 -->
+  <section id="timeline">
+    <h2 class="sec-title">🕰️ 建站时间线</h2>
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-16</b> — 第一次更新</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-17</b> — 收藏了部分鲸鱼娘皮肤</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-20</b> — deepseek大肥鱼功能升级：眼睛/嗓子/耳朵/画笔，全部免费开源</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-20</b> — 网页版上线服务器</div></div>
+      <div class="tl-item"><div class="tl-dot now"></div><div class="tl-body"><b>今天</b> — youweimiao.com 正式挂牌营业 🎉</div></div>
+    </div>
+  </section>
+
+  <!-- 图鉴墙 -->
+  <section id="gallery">
+    <h2 class="sec-title">🎨 大肥鱼图鉴</h2>
+    <p class="sec-sub">同一个蓝发猫耳少女，九种画风 · 全部出自 DeepSeek 二创 (长按可直接保存图片)</p>
+    <div class="gallery">
+      <figure class="gitem"><img src="图鉴/1787245477798.png" alt="Q版女仆猫耳"><figcaption>Q版女仆</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245471727.png" alt="双人Q版"><figcaption>双人Q版</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245496740.jpeg" alt="Q版猫耳女仆"><figcaption>猫耳女仆</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245426080.jpeg" alt="洛丽塔"><figcaption>洛丽塔</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245421689.jpeg" alt="洛丽塔插画"><figcaption>插画风</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245423589.jpeg" alt="猫耳插画"><figcaption>猫耳少女</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245449938.jpeg" alt="拟人插画"><figcaption>拟人版</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245535482.png" alt="鲸鱼少女"><figcaption>鲸鱼少女</figcaption></figure>
+      <figure class="gitem"><img src="图鉴/1787245577546.png" alt="鲸鱼少女二"><figcaption>透明蓝裙</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 关于 -->
+  <section id="about">
+    <h2 class="sec-title">🐟 关于幼薇喵</h2>
+    <div class="about-box">
+      <img class="avatar" src="avatar.png" alt="头像">
+      <div>
+        <p>你好呀，我是 <b>幼薇喵</b>，一只喜欢二次元的计算机系准大二学生。</p>
+        <p>正在做的事：捣鼓小游戏、学运维、折腾本地 AI、把学到的东西一点一点搬上这个网站。</p>
+        <p>这个站没有广告、没有花活，只有我和我的 AI 搭子「大肥鱼」一起折腾的记录。欢迎随便逛~</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>幼薇喵的小站 · 由 幼薇喵 与 AI 搭子大肥鱼 一起维护 🐟</p>
+  <p>网站名 youweimiao.com · <a class="flink" href="/jiaocheng/">教程</a> · <a class="flink" href="/potato/">游戏</a> · <a class="flink" href="/blog/">博客</a></p>
+  <p><a class="flink" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">蜀ICP备2026030520号-1</a></p>
+</footer>
+
+<button id="toTop" title="回到顶部">↑</button>
+<script src="script.js"></script>
+</body>
+</html>

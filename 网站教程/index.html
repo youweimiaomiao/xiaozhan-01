@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小服务器大冒险 · 从零上线你的第一个网站</title>
+<meta name="description" content="写给新手的图形化运维教程：SSH 登录、上传文件、nginx 配置、域名绑定、HTTPS，60 分钟把作品挂到公网。">
+<meta name="theme-color" content="#0f1220">
+<link rel="canonical" href="https://youweimiao.com/jiaocheng/">
+<meta property="og:title" content="小服务器大冒险 · 从零上线你的第一个网站">
+<meta property="og:description" content="图形化六步运维教程 + 真实服务器实战案例 + 彩蛋终端。">
+<meta property="og:image" content="https://youweimiao.com/jiaocheng/favicon.png">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="readBar"></div>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="badge">写给 s2648 的运维第一课</p>
+    <h1>小服务器 · 大冒险</h1>
+    <p class="sub">一台 4核4G 的小服务器，怎么一步步变成<b>全世界都能打开</b>的网站？<br>跟着这份图形化教程走，60 分钟包会。</p>
+    <div class="hero-meta">
+      <span class="chip">🎯 目标站点 youweimiao.com</span>
+      <span class="chip">🐧 Ubuntu + Nginx</span>
+      <span class="chip">🧪 实战案例：土豆兄弟网页版</span>
+    </div>
+    <a class="cta" href="#map">开始冒险 ↓</a>
+  </div>
+</header>
+
+<nav class="steps-nav" id="stepsNav"></nav>
+
+<main>
+  <!-- 序章 -->
+  <section class="card">
+    <h2>🧰 出发前：准备清单</h2>
+    <div class="checklist">
+      <div>☑️ 一台云服务器（4核4G 起步，本教程用腾讯云 Ubuntu）</div>
+      <div>☑️ 能上网的电脑（Windows 自带 SSH 客户端）</div>
+      <div>☑️ 要上线的网站文件（任何 HTML/CSS/JS 都行）</div>
+      <div>⬜ 域名（可选，没有也能用 IP 直连上线）</div>
+    </div>
+    <p class="tip">本页所有步骤都可以点标题展开/收起，点过的会自动打勾记住进度（存在你浏览器里）。</p>
+  </section>
+
+  <!-- 序章 -->
+  <section class="card">
+    <h2>📖 序章：服务器到底是个啥</h2>
+    <p>把网站想象成开一家<b>小卖部</b>：</p>
+    <ul class="simple">
+      <li><b>云服务器</b> = 你在市中心租的一个<b>24 小时不关门的小铺面</b>（4核4G 是铺面大小）；</li>
+      <li><b>SSH</b> = 你手里的<b>备用钥匙</b>，随时进店理货；</li>
+      <li><b>SFTP/scp</b> = <b>进货通道</b>，把家里的文件搬进店里；</li>
+      <li><b>nginx</b> = 请的<b>店员</b>，顾客要什么就从货架拿什么；</li>
+      <li><b>域名</b> = 店铺<b>招牌</b>，让人记住你；<b>HTTPS</b> = 装<b>防盗门</b>，顾客放心。</li>
+    </ul>
+    <p class="tip">🥔 本教程每一步都对应真实服务器（域名 youweimiao.com）上的真实操作——你随时可以拿手机打开页尾的实战链接对照。</p>
+  </section>
+
+  <!-- 概念地图 -->
+  <section id="map" class="card">
+    <h2>🗺️ 先看懂整张地图</h2>
+    <p>网站上线，本质就是一条流水线：</p>
+    <div class="flow">
+      <div class="flow-node you"><span class="dot"></span><b>你的电脑</b><small>写代码 / 放文件</small></div>
+      <div class="flow-arrow">SSH 遥控<br>SFTP 传文件<br>➡</div>
+      <div class="flow-node server"><span class="dot"></span><b>云服务器</b><small>24小时不关机的<br>小房子</small></div>
+      <div class="flow-arrow">nginx 当门卫<br>➡</div>
+      <div class="flow-node world"><span class="dot"></span><b>全世界的访客</b><small>手机/电脑<br>输网址就能看</small></div>
+    </div>
+    <p class="tip">💡 <b>服务器不用装任何"引擎"</b>——网页就是一堆文件（HTML/CSS/JS），放进房子、让门卫（nginx）发出去，完事。我们的土豆兄弟网页版就是这样上线的。</p>
+  </section>
+
+  <!-- 步骤卡片们 -->
+  <section id="steps"></section>
+
+  <!-- 实战全记录 -->
+  <section class="card">
+    <h2>🎮 实战全记录：土豆兄弟是怎么上线的</h2>
+    <p>2026-08-20，下面每一条命令都在 <b>youweimiao.com</b> 背后的服务器上真实执行过：</p>
+    <pre><code class="codeblock"># 1. 登录（用户名是 ubuntu，不是 root！腾讯云默认如此）
+ssh ubuntu@youweimiao.com
+
+# 2. 本地把网页文件传到服务器家里
+scp -r build/web/* ubuntu@youweimiao.com:/home/ubuntu/potato_web/
+
+# 3. 搬进正式货架 /var/www/potato
+sudo mv /home/ubuntu/potato_web /var/www/potato
+sudo chmod -R 755 /var/www/potato
+
+# 4. nginx 加一个"货架"
+#    （配置里写 location /potato/ { alias /var/www/potato/; ... }）
+
+# 5. 检查语法 + 重新加载（别用 restart，reload 不打断访问）
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 6. 浏览器打开 → 成功！
+#    https://youweimiao.com/potato/</code></pre>
+    <a class="cta small" href="https://youweimiao.com/potato/" target="_blank">🎮 去玩一把（真实线上版）</a>
+  </section>
+
+  <!-- 域名与HTTPS -->
+  <section class="card">
+    <h2>🌐 第五步·第六步：挂招牌 + 装防盗门</h2>
+    <div class="two-col">
+      <div>
+        <h3>⑤ 域名怎么用</h3>
+        <ol class="simple">
+          <li>在域名商控制台加一条 <b>A 记录</b>：主机记录 <code>@</code>，记录值 <code>你的服务器公网IP</code>；再一条 <code>www</code> 同理；</li>
+          <li>等几分钟到几小时，用 <code>ping youweimiao.com</code> 看解析；</li>
+          <li>nginx 配置里加 <code>server_name youweimiao.com www.youweimiao.com;</code>，reload；</li>
+          <li>完事——域名直接打开你的网站。</li>
+        </ol>
+      </div>
+      <div>
+        <h3>⑥ HTTPS 小锁头</h3>
+        <pre><code class="codeblock">sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d youweimiao.com -d www.youweimiao.com
+# 证书90天一续，certbot 自动帮你续，别管它</code></pre>
+        <p class="tip">🔒 没域名的阶段，IP 直连照样公网可见；域名生效后再补锁头。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 路线图 -->
+  <section class="card">
+    <h2>🧭 出师之后的下一步学什么</h2>
+    <div class="roadmap">
+      <div class="rm-item done">✅ 上线第一个静态网站（本教程）</div>
+      <div class="rm-item">🔜 给网站加 HTTPS + 绑域名（第5、6步）</div>
+      <div class="rm-item">🔜 学 Linux 基础命令 + systemd 服务</div>
+      <div class="rm-item">🔜 Docker 部署动态应用（比如自建 TTS 服务）</div>
+      <div class="rm-item">🔜 备份与监控（uptime-kuma / 定时备份脚本）</div>
+      <div class="rm-item">🎯 最终目标：自己的作品，全世界上线</div>
+    </div>
+  </section>
+
+  <!-- 宝塔真相 -->
+  <section class="card">
+    <h2>🖥️ 小剧场：宝塔面板真的需要吗？</h2>
+    <p>很多人以为"管服务器 = 宝塔"。<b>不是的</b>——宝塔只是给命令行套了一层网页皮肤，可有可无：</p>
+    <div class="two-col">
+      <div>
+        <h3>用宝塔</h3>
+        <ul class="simple"><li>点点鼠标，适合纯小白</li><li>占内存、占端口</li><li>出问题不知道背后发生了什么</li></ul>
+      </div>
+      <div>
+        <h3>不用宝塔（本教程路线）</h3>
+        <ul class="simple"><li>命令不多：ssh / scp / nginx 三样走天下</li><li>轻量干净，服务器只跑你的网站</li><li>每步都懂原理，出问题不慌</li></ul>
+      </div>
+    </div>
+    <p class="tip">真实案例：这台服务器上"找不到宝塔"其实不是事故——没有它，博客和游戏照跑，教程也在跑。🐟</p>
+  </section>
+
+  <!-- 学习资源 -->
+  <section class="card">
+    <h2>📚 学不动了？来这些地方充电</h2>
+    <ul class="simple">
+      <li><b>Linux Journey</b>（英文，图文闯关式 Linux 入门）</li>
+      <li><b>鸟哥的 Linux 私房菜</b>（中文经典，当字典查）</li>
+      <li><b>nginx 官方文档</b>（配置语法以它为准）</li>
+      <li><b>GitHub 上的漂亮博客</b>：<a class="link" href="https://www.yujingblog.top/" target="_blank">yujingblog.top</a> · <a class="link" href="https://monoblog.cc.cd/" target="_blank">monoblog.cc.cd</a> · <a class="link" href="https://yukino-blog.site/" target="_blank">yukino-blog.site</a>（设计灵感来源）</li>
+    </ul>
+  </section>
+
+  <!-- 命令速查卡 -->
+  <section class="card">
+    <h2>🎴 命令速查卡（贴墙版）</h2>
+    <div class="cheats">
+      <div class="cheat"><code>ssh ubuntu@IP</code><span>登录服务器</span></div>
+      <div class="cheat"><code>scp -r 目录 ubuntu@IP:~/</code><span>上传文件夹</span></div>
+      <div class="cheat"><code>ls -la</code><span>看目录内容</span></div>
+      <div class="cheat"><code>sudo mv A B</code><span>移动/改名</span></div>
+      <div class="cheat"><code>sudo nano 文件</code><span>编辑文件</span></div>
+      <div class="cheat"><code>sudo nginx -t</code><span>检查配置语法</span></div>
+      <div class="cheat"><code>sudo systemctl reload nginx</code><span>重载配置</span></div>
+      <div class="cheat"><code>sudo systemctl status nginx</code><span>看服务状态</span></div>
+      <div class="cheat"><code>journalctl -u nginx -n 50</code><span>看最新日志</span></div>
+      <div class="cheat"><code>ping 域名</code><span>查域名解析</span></div>
+      <div class="cheat"><code>sudo ufw status</code><span>看防火墙</span></div>
+      <div class="cheat"><code>htop / df -h</code><span>看负载/磁盘</span></div>
+    </div>
+  </section>
+
+  <!-- 成功日记 -->
+  <section class="card">
+    <h2>📝 成功日记：记录你的第一次上线</h2>
+    <p>写下日期、部署了什么、踩了什么坑——存在你浏览器里，随时回来翻：</p>
+    <textarea id="diary" placeholder="例：2026-08-20，把土豆兄弟挂到了 /potato/，踩坑：sites-enabled 里不能放 .bak 备份……"></textarea>
+    <button id="diarySave" class="cta small">保存到浏览器</button>
+    <span id="diaryHint" class="dim"></span>
+  </section>
+
+  <!-- 云防火墙 -->
+  <section class="card">
+    <h2>🧱 隐形门卫：云厂商的"安全组"</h2>
+    <p>服务器外面还有一道<b>你看不见的门</b>——云厂商控制台里的<b>安全组（防火墙）</b>。哪怕服务器上一切正常，安全组不放行，外面照样连不进来：</p>
+    <div class="two-col">
+      <div>
+        <h3>常见翻车现场</h3>
+        <ul class="simple">
+          <li>SSH 连不上 → 安全组没放行 <code>22</code>；</li>
+          <li>网站打不开 → 没放行 <code>80/443</code>；</li>
+          <li>宝塔面板进不去 → 面板端口（如 8888）没放行。</li>
+        </ul>
+      </div>
+      <div>
+        <h3>正确姿势</h3>
+        <ol class="simple">
+          <li>腾讯云控制台 → 云服务器 → 安全组；</li>
+          <li>入站规则放行：<code>22</code>（SSH）、<code>80</code>（HTTP）、<code>443</code>（HTTPS）；</li>
+          <li>来源建议 <code>0.0.0.0/0</code>（网站要让所有人访问）；SSH 可只对自己的 IP 开放更安全。</li>
+        </ol>
+      </div>
+    </div>
+    <p class="tip">📖 真实案例：本机 8888 端口在安全组里"是开着的"，但服务器上根本没装面板——所以进不去。安全组只是第一道门，服务要真的在跑才行。</p>
+  </section>
+
+  <!-- 图形化上传 -->
+  <section class="card">
+    <h2>🖱️ 不想敲命令？图形化工具一样行</h2>
+    <p>上传文件也可以纯鼠标操作：</p>
+    <ol class="simple">
+      <li>下载 <b>WinSCP</b> 或 <b>FileZilla</b>（免费）；</li>
+      <li>新建连接：主机 <code>youweimiao.com</code>，端口 22，用户 <code>ubuntu</code>，密码填你的；</li>
+      <li>左边=你的电脑，右边=服务器，<b>拖拽</b>即上传；</li>
+      <li>右键文件还能改名、改权限（数字 755 之类）。</li>
+    </ol>
+    <p class="tip">⚠️ 图形工具帮你"搬货"，但改 nginx 配置仍需命令行或编辑器——两者搭配干活不累。</p>
+  </section>
+
+  <!-- 小测验 -->
+  <section class="card">
+    <h2>📝 学完验收：三题小测</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <!-- 备份实战 -->
+  <section class="card">
+    <h2>💾 第七步（实战）：给网站上保险——自动备份</h2>
+    <p>上线只是开始。<b>服务器哪天抽风了，有备份 = 满血复活</b>。这台服务器今天刚装好的备份脚本，原样送给你：</p>
+    <pre><code class="codeblock"># 1. 写一个备份脚本
+cat &gt; ~/backup.sh &lt;&lt; 'EOF'
+#!/bin/bash
+BACKUP_DIR=/home/ubuntu/backups
+DATE=$(date +%Y%m%d_%H%M%S)
+mkdir -p $BACKUP_DIR
+tar -czf $BACKUP_DIR/web_$DATE.tar.gz /var/www /etc/nginx/sites-enabled 2&gt;/dev/null
+ls -t $BACKUP_DIR/web_*.tar.gz | tail -n +8 | xargs -r rm -f   # 只留最近7份
+echo "$(date +%F_%T) 备份完成" &gt;&gt; $BACKUP_DIR/backup.log
+EOF
+chmod +x ~/backup.sh
+
+# 2. 交给 cron：每天凌晨 4 点自动跑
+(crontab -l 2&gt;/dev/null | grep -v backup.sh; echo '0 4 * * * /home/ubuntu/backup.sh') | crontab -
+
+# 3. 手动跑一次试试
+~/backup.sh &amp;&amp; ls -lh ~/backups/</code></pre>
+    <p class="tip">💾 本页展示的就是刚才那次真实备份：<code>web_20260820_131804.tar.gz</code>（13MB）。以后想回滚，解压即用。</p>
+  </section>
+
+  <!-- 关于 -->
+  <section class="card">
+    <h2>🐟 关于本教程</h2>
+    <p>这是一个"真事改编"的教程：</p>
+    <ul class="simple">
+      <li><b>2026-08-16</b>：s2648 用 Godot 做了《土豆兄弟·前5波复刻》小游戏；</li>
+      <li><b>2026-08-20</b>：大肥鱼（DeepSeek）把游戏导出成网页版，SSH 登上这台服务器，挂载上线——就是页尾的 <code>/potato/</code>；</li>
+      <li>顺手写了这份教程，<b>教程自己也跑在这台服务器上</b>，教的就是刚才发生的事；</li>
+      <li>服务器上还有一位老住户：一个 Ubuntu 主题个人博客（<code>/</code>）。</li>
+    </ul>
+    <p class="tip">所以：本教程的每一步，都能在这台机器上找到活证据。边看边对照，学得最快。🚀</p>
+  </section>
+
+  <!-- Linux目录速查 -->
+  <section class="card">
+    <h2>🗂️ Linux 关键目录速查（新手不迷路）</h2>
+    <table class="faq">
+      <tr><th>路径</th><th>装的是什么</th><th>你什么时候会碰它</th></tr>
+      <tr><td><code>/home/ubuntu/</code></td><td>你的家目录</td><td>刚登录就在这；先传文件到这</td></tr>
+      <tr><td><code>/var/www/</code></td><td>网站文件货架</td><td>放正式上线的网站文件</td></tr>
+      <tr><td><code>/etc/nginx/</code></td><td>nginx 配置总目录</td><td>改门卫的规矩</td></tr>
+      <tr><td><code>/etc/nginx/sites-enabled/</code></td><td>生效中的站点配置</td><td>⚠️ 别放 .bak 备份！</td></tr>
+      <tr><td><code>/var/log/nginx/</code></td><td>nginx 日志</td><td>网站出问题先看这里</td></tr>
+      <tr><td><code>/home/ubuntu/backups/</code></td><td>自动备份（本教程第7步装的）</td><td>回滚找它</td></tr>
+    </table>
+  </section>
+
+  <!-- 答疑角 -->
+  <section class="card">
+    <h2>💬 答疑角（点开看答案）</h2>
+    <div class="acc">
+      <div class="acc-item">
+        <div class="acc-q">服务器会不会突然断电丢数据？</div>
+        <div class="acc-a">云服务器有冗余电源和存储，比你家电还稳；但误删、误改才是真风险——所以第 7 步的自动备份是标配。</div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-q">上传了文件但网站还是老样子？</div>
+        <div class="acc-a">三查：① 文件是否传进了 nginx 指向的目录（root/alias）；② 是否 reload 了 nginx；③ 浏览器 Ctrl+F5 强刷。</div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-q">一定要用域名吗？IP 直连丢人吗？</div>
+        <div class="acc-a">不丢人。IP 直连完全够"公网可见"，域名是门面 + HTTPS 的前提。先上线，再挂牌。</div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-q">我能在这台服务器上放多少个网站？</div>
+        <div class="acc-a">理论上无限——nginx 每个 server/location 一个"货架"，只要磁盘够（df -h 看看）。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 开发日志 -->
+  <section class="card">
+    <h2>🛠️ 本站开发日志（2026-08-20）</h2>
+    <ul class="simple">
+      <li>13:05 开工 → 13:15 初版上线（六步教程+实战案例+彩蛋终端）；</li>
+      <li>之后一小时连发十几轮更新：序章比喻、安全组专题、图形化上传、昼夜主题、蹦跶土豆、三题小测、成功日记、命令速查卡、阅读进度条、答疑角、打印导出、自动备份章节……</li>
+      <li>全部改动：本地写好 → SFTP 上传 → nginx reload → 公网验证，一条龙。</li>
+    </ul>
+    <p class="tip">💡 这正是教程想教你的节奏：<b>小步快跑，随时上线</b>。想围观源码：<a class="link" href="https://github.com/youweimiaomiao/cun" target="_blank">github.com/youweimiaomiao/cun</a>（`网站教程/` 目录，改完 scp 上传即可自定义你自己的版本）</p>
+  </section>
+
+  <!-- 术语表 -->
+  <section class="card">
+    <h2>📕 新手术语表（10 个词，读完不懵）</h2>
+    <table class="faq">
+      <tr><th>词</th><th>大白话</th></tr>
+      <tr><td>IP 地址</td><td>服务器的门牌号，如 1.2.3.4</td></tr>
+      <tr><td>域名</td><td>门牌号的花名，如 youweimiao.com</td></tr>
+      <tr><td>DNS</td><td>查花名→门牌号的电话本</td></tr>
+      <tr><td>端口</td><td>房子上的不同窗口：22=SSH、80=网页、443=加密网页</td></tr>
+      <tr><td>SSH</td><td>远程遥控线，敲命令用</td></tr>
+      <tr><td>SFTP/scp</td><td>传文件的货运通道</td></tr>
+      <tr><td>nginx</td><td>网页门卫，按路径发文件</td></tr>
+      <tr><td>sudo</td><td>"以管理员身份执行"</td></tr>
+      <tr><td>安全组</td><td>云厂商的防火墙，管哪些端口对外开</td></tr>
+      <tr><td>HTTPS/TLS</td><td>加密通道，网址前的小锁头</td></tr>
+    </table>
+  </section>
+
+  <!-- 出师 -->
+  <section class="card grad">
+    <h2 style="text-align:center">🎓 恭喜，你出师了</h2>
+    <p style="text-align:center;font-size:17px">从"网站是什么"到"自动备份装好"，你已走完真实上线的全部路程。<br>剩下的只有一件事：<b>动手</b>。</p>
+    <p style="text-align:center;margin-top:12px"><a class="cta" href="#map">再走一遍 ↑</a></p>
+  </section>
+
+  <!-- 日常更新 -->
+  <section class="card">
+    <h2>🔄 日常更新网站：三步走（背下来）</h2>
+    <p>上线不是终点，改版才是常态。以后你每改一次网站，就重复这三步：</p>
+    <pre><code class="codeblock"># 1. 本地改好文件
+# 2. 上传覆盖（只传改动的文件就行）
+scp style.css ubuntu@youweimiao.com:/var/www/你的站点/
+# 3. 刷新浏览器（静态文件不需要 reload nginx，除非改了 nginx 配置）</code></pre>
+    <p class="tip">⏱️ 熟练之后，一次更新 <b>30 秒</b>搞定——这就是本教程想给你的肌肉记忆。</p>
+    <p>🎁 进阶：我们把这套流程做成了<b>一键部署脚本</b>（上传+到位+验证一条龙）：</p>
+    <pre><code class="codeblock">pwsh -File "C:\Deepseek\deepseek工作分区一号\连接git和\本地AI工具箱\一键部署.ps1" `
+     -本地 "C:\...\网站教程" -远端路径 "/jiaocheng"
+# 输出：① 上传 → ② 移动到位 → ③ 公网验证 HTTP 200 ✓</code></pre>
+  </section>
+
+  <!-- 排错表 -->
+  <section class="card">
+    <h2>🚑 常见翻车 & 抢救手册</h2>
+    <table class="faq">
+      <tr><th>症状</th><th>第一反应</th></tr>
+      <tr><td>浏览器转圈打不开</td><td>查端口通不通：<code>nc -zv IP 80</code>；云厂商<b>安全组</b>放行没？</td></tr>
+      <tr><td>nginx -t 报 duplicate server</td><td>sites-enabled 里放了 .bak 备份文件——备份必须移出该目录</td></tr>
+      <tr><td>改了配置没效果</td><td>忘了 <code>sudo systemctl reload nginx</code></td></tr>
+      <tr><td>游戏黑屏/报 Secure Context 错误</td><td>Godot 4.3+ 网页版必须 HTTPS 才能跑（SharedArrayBuffer 依赖）。纯 HTTP 服务器无解——换 GitHub Pages（自带 HTTPS）或域名+证书。本页第5、6步。</td></tr>
+      <tr><td>SSH 登录被拒</td><td>腾讯云 Ubuntu 默认用户是 <code>ubuntu</code>，不是 root</td></tr>
+    </table>
+  </section>
+
+  <!-- 终端彩蛋 -->
+  <section class="card">
+    <h2>🕹️ 彩蛋：假装你在服务器上</h2>
+    <p>在下面终端里敲 <code>help</code> 看看（纯前端模拟，不会真碰服务器）：</p>
+    <div class="terminal" id="term">
+      <div class="term-bar"><span class="t-dot r"></span><span class="t-dot y"></span><span class="t-dot g"></span><span class="term-title">ubuntu@youweimiao.com: ~</span></div>
+      <div class="term-body" id="termBody"></div>
+      <div class="term-input-row"><span class="prompt">ubuntu@小服务器:~$</span><input id="termInput" autocomplete="off" spellcheck="false"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>由 DeepSeek 大肥鱼 和 s2648 一起捣鼓 · 站点 youweimiao.com · 教程本身也跑在这台服务器上 🐟</p>
+  <p id="footStats"></p>
+  <p class="foot-links">
+    <a class="link" href="/">🏠 博客</a> ·
+    <a class="link" href="/jiaocheng/">📖 教程</a> ·
+    <a class="link" href="/potato/">🎮 土豆兄弟</a>
+  </p>
+  <p><a class="link" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">蜀ICP备2026030520号-1</a></p>
+</footer>
+<button id="toTop" title="回到顶部">↑</button>
+<button id="themeBtn" title="切换白天/黑夜">🌙</button>
+<button id="printBtn" title="打印/导出教程">🖨️</button>
+<button id="shareBtn" title="复制本页链接">🔗</button>
+<div id="potatoMascot" title="点我">🥔</div>
+
+<script src="script.js"></script>
+<noscript><p style="text-align:center;padding:20px;color:#ffc857">⚠️ 需要开启 JavaScript 才能展开教程步骤，代码块内容仍然可见。</p></noscript>
+</body>
+</html>
