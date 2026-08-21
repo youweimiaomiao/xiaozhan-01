@@ -53,26 +53,54 @@ async function 刷新统计() {
 刷新统计();
 setInterval(刷新统计, 10000);
 
-// 音乐卡：黑胶旋转 + 均衡器 + 播放按钮
+// 音乐卡：三曲歌单 + 黑胶旋转 + 均衡器
+const 歌单 = [
+  { 名: "讨厌", 手: "芮恩", 文件: "music/讨厌 - 芮恩.mp3" },
+  { 名: "无尽幸福", 手: "北也", 文件: "music/无尽幸福 - 北也.mp3" },
+  { 名: "The one", 手: "栗子养乐多 / WhyAce / Zy", 文件: "music/The one - 栗子养乐多、WhyAce、Zy.mp3" },
+];
 const bgm = document.getElementById("bgm");
 const vinyl = document.getElementById("vinyl");
 const eq = document.getElementById("eq");
 const playBtn = document.getElementById("playBtn");
-const musicTip = document.getElementById("musicTip");
-let 有音源 = false;
-bgm.addEventListener("canplaythrough", () => { 有音源 = true; if (musicTip) musicTip.textContent = "正在播放 · 大肥鱼精选 🐟"; });
-bgm.addEventListener("error", () => {
-  有音源 = false;
-  if (musicTip) musicTip.textContent = "还没有音乐文件：放一个 music.mp3 到服务器 /var/www/blog/ 目录就能点歌";
+const 列表 = document.getElementById("musicList");
+let 当前 = -1;
+
+// 渲染歌单
+歌单.forEach((s, i) => {
+  const li = document.createElement("li");
+  li.innerHTML = '<span>' + s.名 + '</span><span>' + s.手 + '</span>';
+  li.addEventListener("click", () => 载入(i));
+  列表.appendChild(li);
 });
+const 列表项 = 列表.querySelectorAll("li");
+
+function 高亮() {
+  列表项.forEach((li, k) => li.classList.toggle("active", k === 当前));
+}
+function 播放态() {
+  playBtn.textContent = "⏸"; vinyl.classList.add("playing"); eq.classList.add("playing");
+}
+function 暂停态() {
+  playBtn.textContent = "▶"; vinyl.classList.remove("playing"); eq.classList.remove("playing");
+}
+function 载入(i) {
+  当前 = (i + 歌单.length) % 歌单.length;
+  const s = 歌单[当前];
+  bgm.src = s.文件;
+  document.getElementById("musicTitle").textContent = s.名;
+  document.getElementById("musicArtist").textContent = s.手;
+  高亮();
+  bgm.play().then(播放态).catch(暂停态);
+}
 playBtn.addEventListener("click", () => {
-  if (!有音源) {
-    if (musicTip) musicTip.textContent = "⏳ 正在寻找 music.mp3 ……（服务器 /var/www/blog/ 目录）";
-    return;
-  }
-  if (bgm.paused) { bgm.play(); playBtn.textContent = "⏸"; vinyl.classList.add("playing"); eq.classList.add("playing"); }
-  else { bgm.pause(); playBtn.textContent = "▶"; vinyl.classList.remove("playing"); eq.classList.remove("playing"); }
+  if (当前 < 0) { 载入(0); return; }
+  if (bgm.paused) { bgm.play().then(播放态).catch(() => {}); }
+  else { bgm.pause(); 暂停态(); }
 });
+document.getElementById("prevBtn").addEventListener("click", () => 载入(当前 - 1));
+document.getElementById("nextBtn").addEventListener("click", () => 载入(当前 + 1));
+bgm.addEventListener("ended", () => 载入(当前 + 1));   // 播完自动下一首
 
 // 迷你日历：本月 + 今天高亮
 function 渲染日历() {

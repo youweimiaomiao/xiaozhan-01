@@ -175,14 +175,18 @@
       <div class="music-box">
         <div class="vinyl" id="vinyl"><img src="/图鉴/1787245471727.png" alt="唱片封面"></div>
         <div class="music-info">
-          <div class="music-title">站点 BGM</div>
-          <div class="music-artist">大肥鱼精选 · 点▶播放</div>
+          <div class="music-title" id="musicTitle">点歌单里的歌开始播放</div>
+          <div class="music-artist" id="musicArtist">大肥鱼精选 🐟</div>
           <div class="eq" id="eq"><span></span><span></span><span></span><span></span><span></span></div>
         </div>
-        <button class="play-btn" id="playBtn" title="播放/暂停">▶</button>
       </div>
-      <audio id="bgm" src="music.mp3" loop preload="none"></audio>
-      <p class="music-tip" id="musicTip">还没有音乐文件：放一个 music.mp3 到服务器 /var/www/blog/ 目录就能点歌</p>
+      <div class="music-ctrl">
+        <button class="ctrl-btn" id="prevBtn" title="上一首">⏮</button>
+        <button class="play-btn" id="playBtn" title="播放/暂停">▶</button>
+        <button class="ctrl-btn" id="nextBtn" title="下一首">⏭</button>
+      </div>
+      <ul class="music-list" id="musicList"></ul>
+      <audio id="bgm" preload="none"></audio>
     </div>
 
     <div class="widget">
