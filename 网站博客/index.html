@@ -32,87 +32,171 @@
   <div class="scroll-hint" title="往下看">⌄</div>
 </header>
 
-<main class="grid">
+<div class="layout">
 
-  <article class="post-card">
-    <img class="cover" src="/图鉴/1787245477798.png" alt="访客计数器" loading="lazy">
-    <div class="content">
-      <div class="meta">
-        <span class="date">2026-08-21</span>
-        <span class="tag">建站</span><span class="tag">后端</span>
+  <!-- 左栏：作者 / 公告 / 分类 -->
+  <aside class="col-left">
+
+    <div class="widget">
+      <div class="widget-head"><span class="wicon">🐟</span><span class="widget-title">关于作者</span></div>
+      <div class="author-box">
+        <img class="author-avatar" src="/avatar.png" alt="幼薇喵">
+        <div class="author-name">幼薇喵</div>
+        <p class="author-bio">计算机系准大二 · 二次元<br>和 AI 搭子大肥鱼一起折腾</p>
+        <div class="author-links">
+          <a class="mini-btn" href="https://github.com/youweimiaomiao/xiaozhan-01" target="_blank" rel="noopener">GitHub</a>
+          <a class="mini-btn" href="mailto:s2648617834@163.com">Email</a>
+        </div>
       </div>
-      <h2 class="title"><a href="/#visitors">访客计数器：给网站挂上一个"实时心跳"</a></h2>
-      <p class="excerpt">从零写一个访客计数后端：Python 标准库 50 行、IP 加盐哈希去重、轮询即心跳的"当前在线"、systemd 开机自启、nginx 反代。数字每 10 秒自己跳的感觉，像看着小卖部的客人进进出出。</p>
-      <a class="enter" href="/#visitors" title="去看">→</a>
     </div>
-  </article>
 
-  <article class="post-card">
-    <img class="cover" src="/图鉴/1787245449938.jpeg" alt="挂牌营业" loading="lazy">
-    <div class="content">
-      <div class="meta">
-        <span class="date">2026-08-21</span>
-        <span class="tag">建站</span>
+    <div class="widget">
+      <div class="widget-head"><span class="wicon">📢</span><span class="widget-title">公告</span></div>
+      <ul class="notice-list">
+        <li>🎉 youweimiao.com 挂牌营业中</li>
+        <li>🐟 大肥鱼 24 小时站岗，欢迎来逛</li>
+        <li>🔧 站点持续施工，常来看看新东西</li>
+      </ul>
+    </div>
+
+    <div class="widget">
+      <div class="widget-head"><span class="wicon">🗂️</span><span class="widget-title">分类</span></div>
+      <div class="cat-pills">
+        <button class="category-pill active" data-cat="全部">全部</button>
+        <button class="category-pill" data-cat="建站">建站</button>
+        <button class="category-pill" data-cat="游戏">游戏</button>
+        <button class="category-pill" data-cat="运维">运维</button>
+        <button class="category-pill" data-cat="AI">AI</button>
+        <button class="category-pill" data-cat="收藏">收藏</button>
       </div>
-      <h2 class="title"><a href="/">youweimiao.com 正式挂牌营业</a></h2>
-      <p class="excerpt">域名解析、Let's Encrypt 证书、HTTP 跳 HTTPS、备案号上墙。从一串 IP 到"招牌挂好"，小店开张——欢迎随便逛，没有广告，只有折腾记录。</p>
-      <a class="enter" href="/" title="去逛">→</a>
     </div>
-  </article>
 
-  <article class="post-card">
-    <img class="cover" src="/图鉴/1787245426080.jpeg" alt="土豆兄弟" loading="lazy">
-    <div class="content">
-      <div class="meta">
-        <span class="date">2026-08-20</span>
-        <span class="tag">游戏</span>
+  </aside>
+
+  <!-- 中栏：文章流 -->
+  <main class="col-center">
+
+    <article class="post-card" data-cats="建站,后端">
+      <img class="cover" src="/图鉴/1787245477798.png" alt="访客计数器" loading="lazy">
+      <div class="content">
+        <div class="meta">
+          <span class="date">2026-08-21</span>
+          <span class="tag">建站</span><span class="tag">后端</span>
+        </div>
+        <h2 class="title"><a href="/#visitors">访客计数器：给网站挂上一个"实时心跳"</a></h2>
+        <p class="excerpt">从零写一个访客计数后端：Python 标准库 50 行、IP 加盐哈希去重、轮询即心跳的"当前在线"、systemd 开机自启、nginx 反代。数字每 10 秒自己跳的感觉，像看着小卖部的客人进进出出。</p>
+        <a class="enter" href="/#visitors" title="去看">→</a>
       </div>
-      <h2 class="title"><a href="/potato/">土豆兄弟·前5波复刻：网页版上线记</a></h2>
-      <p class="excerpt">Godot 4.5.1 自研小游戏：自动战斗、商店、升级四选一。导出网页版踩了两个大坑：WASM 的 MIME 类型、Godot 4.3+ 强制的 Secure Context（必须 HTTPS）。</p>
-      <a class="enter" href="/potato/" title="去玩">→</a>
-    </div>
-  </article>
+    </article>
 
-  <article class="post-card">
-    <img class="cover" src="/图鉴/1787245496740.jpeg" alt="运维教程" loading="lazy">
-    <div class="content">
-      <div class="meta">
-        <span class="date">2026-08-20</span>
-        <span class="tag">运维</span>
+    <article class="post-card" data-cats="建站">
+      <img class="cover" src="/图鉴/1787245449938.jpeg" alt="挂牌营业" loading="lazy">
+      <div class="content">
+        <div class="meta">
+          <span class="date">2026-08-21</span>
+          <span class="tag">建站</span>
+        </div>
+        <h2 class="title"><a href="/">youweimiao.com 正式挂牌营业</a></h2>
+        <p class="excerpt">域名解析、Let's Encrypt 证书、HTTP 跳 HTTPS、备案号上墙。从一串 IP 到"招牌挂好"，小店开张——欢迎随便逛，没有广告，只有折腾记录。</p>
+        <a class="enter" href="/" title="去逛">→</a>
       </div>
-      <h2 class="title"><a href="/jiaocheng/">小服务器大冒险：从 SSH 到 HTTPS 的六步</a></h2>
-      <p class="excerpt">把"网站是什么"讲成小卖部的比喻：服务器=铺面、SSH=备用钥匙、nginx=门卫、HTTPS=防盗门。图形化六步教程，每一步都在真实服务器上跑过，含彩蛋终端。</p>
-      <a class="enter" href="/jiaocheng/" title="去学">→</a>
-    </div>
-  </article>
+    </article>
 
-  <article class="post-card">
-    <img class="cover" src="/图鉴/1787245423589.jpeg" alt="AI工具箱" loading="lazy">
-    <div class="content">
-      <div class="meta">
-        <span class="date">2026-08-20</span>
-        <span class="tag">AI</span>
+    <article class="post-card" data-cats="游戏">
+      <img class="cover" src="/图鉴/1787245426080.jpeg" alt="土豆兄弟" loading="lazy">
+      <div class="content">
+        <div class="meta">
+          <span class="date">2026-08-20</span>
+          <span class="tag">游戏</span>
+        </div>
+        <h2 class="title"><a href="/potato/">土豆兄弟·前5波复刻：网页版上线记</a></h2>
+        <p class="excerpt">Godot 4.5.1 自研小游戏：自动战斗、商店、升级四选一。导出网页版踩了两个大坑：WASM 的 MIME 类型、Godot 4.3+ 强制的 Secure Context（必须 HTTPS）。</p>
+        <a class="enter" href="/potato/" title="去玩">→</a>
       </div>
-      <h2 class="title"><a href="/#about">本地 AI 工具箱：眼睛·嗓子·耳朵·画笔</a></h2>
-      <p class="excerpt">Ollama + Qwen2.5-VL 当眼睛，Edge-TTS 当嗓子，faster-whisper 当耳朵，ComfyUI + SDXL 当画笔，还有克隆音色的野心。全部免费开源、跑在自己的显卡上。</p>
-      <a class="enter" href="/#about" title="去看">→</a>
-    </div>
-  </article>
+    </article>
 
-  <article class="post-card">
-    <img class="cover" src="/图鉴/1787245535482.png" alt="鲸鱼娘" loading="lazy">
-    <div class="content">
-      <div class="meta">
-        <span class="date">2026-08-17</span>
-        <span class="tag">收藏</span>
+    <article class="post-card" data-cats="运维">
+      <img class="cover" src="/图鉴/1787245496740.jpeg" alt="运维教程" loading="lazy">
+      <div class="content">
+        <div class="meta">
+          <span class="date">2026-08-20</span>
+          <span class="tag">运维</span>
+        </div>
+        <h2 class="title"><a href="/jiaocheng/">小服务器大冒险：从 SSH 到 HTTPS 的六步</a></h2>
+        <p class="excerpt">把"网站是什么"讲成小卖部的比喻：服务器=铺面、SSH=备用钥匙、nginx=门卫、HTTPS=防盗门。图形化六步教程，每一步都在真实服务器上跑过，含彩蛋终端。</p>
+        <a class="enter" href="/jiaocheng/" title="去学">→</a>
       </div>
-      <h2 class="title"><a href="/#about">鲸鱼娘昼夜皮肤收藏</a></h2>
-      <p class="excerpt">给 DeepSeek Harness 网页界面收藏的一套换肤插件，顺带摸清了 DSH 插件的加载机制。好看的界面让人更有折腾欲，这是真的。</p>
-      <a class="enter" href="/#about" title="去看">→</a>
-    </div>
-  </article>
+    </article>
 
-</main>
+    <article class="post-card" data-cats="AI">
+      <img class="cover" src="/图鉴/1787245423589.jpeg" alt="AI工具箱" loading="lazy">
+      <div class="content">
+        <div class="meta">
+          <span class="date">2026-08-20</span>
+          <span class="tag">AI</span>
+        </div>
+        <h2 class="title"><a href="/#about">本地 AI 工具箱：眼睛·嗓子·耳朵·画笔</a></h2>
+        <p class="excerpt">Ollama + Qwen2.5-VL 当眼睛，Edge-TTS 当嗓子，faster-whisper 当耳朵，ComfyUI + SDXL 当画笔，还有克隆音色的野心。全部免费开源、跑在自己的显卡上。</p>
+        <a class="enter" href="/#about" title="去看">→</a>
+      </div>
+    </article>
+
+    <article class="post-card" data-cats="收藏">
+      <img class="cover" src="/图鉴/1787245535482.png" alt="鲸鱼娘" loading="lazy">
+      <div class="content">
+        <div class="meta">
+          <span class="date">2026-08-17</span>
+          <span class="tag">收藏</span>
+        </div>
+        <h2 class="title"><a href="/#about">鲸鱼娘昼夜皮肤收藏</a></h2>
+        <p class="excerpt">给 DeepSeek Harness 网页界面收藏的一套换肤插件，顺带摸清了 DSH 插件的加载机制。好看的界面让人更有折腾欲，这是真的。</p>
+        <a class="enter" href="/#about" title="去看">→</a>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- 右栏：统计 / 音乐 / 日历 -->
+  <aside class="col-right">
+
+    <div class="widget">
+      <div class="widget-head"><span class="wicon">📊</span><span class="widget-title">站点统计</span></div>
+      <div class="stat-rows">
+        <div class="stat-row"><span>今日来访</span><b id="wTodayUV">-</b></div>
+        <div class="stat-row"><span>今日浏览</span><b id="wTodayPV">-</b></div>
+        <div class="stat-row"><span>累计来访</span><b id="wTotalUV">-</b></div>
+        <div class="stat-row"><span>当前在线</span><b id="wOnline">-</b></div>
+      </div>
+      <p class="widget-note">数字实时刷新，同一天同一访客只计一次</p>
+    </div>
+
+    <div class="widget">
+      <div class="widget-head"><span class="wicon">🎵</span><span class="widget-title">音乐</span></div>
+      <div class="music-box">
+        <div class="vinyl" id="vinyl"><img src="/图鉴/1787245471727.png" alt="唱片封面"></div>
+        <div class="music-info">
+          <div class="music-title">站点 BGM</div>
+          <div class="music-artist">大肥鱼精选 · 点▶播放</div>
+          <div class="eq" id="eq"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <button class="play-btn" id="playBtn" title="播放/暂停">▶</button>
+      </div>
+      <audio id="bgm" src="music.mp3" loop preload="none"></audio>
+      <p class="music-tip" id="musicTip">还没有音乐文件：放一个 music.mp3 到服务器 /var/www/blog/ 目录就能点歌</p>
+    </div>
+
+    <div class="widget">
+      <div class="widget-head"><span class="wicon">📆</span><span class="widget-title">日历</span></div>
+      <div class="calendar">
+        <div class="cal-head" id="calHead"></div>
+        <div class="weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+        <div class="calendar-grid" id="calGrid"></div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
 
 <footer id="footer">
   <p>幼薇喵的老博客 · 折腾日志 🐟 · <a href="/">返回小站</a> · <a href="/jiaocheng/">教程</a> · <a href="/potato/">游戏</a></p>
