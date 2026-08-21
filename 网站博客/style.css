@@ -185,6 +185,30 @@ body {
 .stat-row:nth-child(odd) { background: rgba(255, 255, 255, .03); }
 .stat-row b { color: var(--text); font-size: 16px; font-variant-numeric: tabular-nums; }
 .stat-row b.hot { color: #4ade80; }
+.stat-row b.uptime { font-size: 13.5px; letter-spacing: .5px; }
+
+/* 时间日历卡：大字等宽时钟 + 时段背景交叉淡入 + 问候语 */
+.clock-box {
+  position: relative; overflow: hidden; border-radius: 12px;
+  padding: 16px 10px 14px; text-align: center; margin-bottom: 12px;
+  background: #14161d;
+}
+.clock-bg { position: absolute; inset: 0; }
+.clock-bg span {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1s ease; filter: brightness(.5) saturate(1.1);
+}
+.clock-box.morning .bg-morning { opacity: 1; }
+.clock-box.noon .bg-noon { opacity: 1; }
+.clock-box.evening .bg-evening { opacity: 1; }
+.clock-box.night .bg-night { opacity: 1; }
+.clock {
+  position: relative; font-family: Consolas, "Courier New", monospace;
+  font-size: 27px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .9);
+}
+.clock-date { position: relative; margin-top: 5px; font-size: 12.5px; color: rgba(255, 255, 255, .88); text-shadow: 0 1px 6px rgba(0, 0, 0, .9); }
+.clock-greet { position: relative; margin-top: 7px; font-size: 13.5px; font-weight: 600; text-shadow: 0 1px 6px rgba(0, 0, 0, .9); }
 
 /* 音乐卡：旋转黑胶 + 均衡器 */
 .music-box { display: flex; align-items: center; gap: 12px; }

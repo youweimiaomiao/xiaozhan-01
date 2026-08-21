@@ -112,7 +112,26 @@ bgm.addEventListener("error", () => {                  // 真的加载失败时�
   if (t) t.textContent = "播放失败: " + 名;
 });
 
-// 迷你日历：本月 + 今天高亮
+// 时间日历 + 运行时长：每秒滴答，跨天自动重绘日历
+const 建站时刻 = new Date("2026-08-20T00:00:00").getTime();
+const 星期名 = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+function 问候(时) {
+  if (时 < 5) return ["🌙", "夜深了，早点睡"];
+  if (时 < 11) return ["🌅", "早上好，元气满满"];
+  if (时 < 13) return ["☀️", "中午好，记得吃饭"];
+  if (时 < 18) return ["🌤️", "下午好，摸鱼中"];
+  if (时 < 23) return ["🌇", "晚上好，来逛逛"];
+  return ["🌙", "夜深了，早点睡"];
+}
+function 时段名(时) {
+  if (时 < 5 || 时 >= 23) return "night";
+  if (时 < 11) return "morning";
+  if (时 < 13) return "noon";
+  if (时 < 18) return "evening";
+  return "night";
+}
+function 补零(n) { return String(n).padStart(2, "0"); }
+let 上次日期 = "";
 function 渲染日历() {
   const now = new Date();
   const head = document.getElementById("calHead");
@@ -130,4 +149,27 @@ function 渲染日历() {
     grid.appendChild(cell);
   }
 }
-渲染日历();
+function 滴答() {
+  const now = new Date();
+  // 时钟
+  document.getElementById("clock").textContent =
+    补零(now.getHours()) + ":" + 补零(now.getMinutes()) + ":" + 补零(now.getSeconds());
+  document.getElementById("clockDate").textContent =
+    now.getFullYear() + " 年 " + (now.getMonth() + 1) + " 月 " + now.getDate() + " 日 · " + 星期名[now.getDay()];
+  const [表情, 话] = 问候(now.getHours());
+  document.getElementById("clockGreet").textContent = 表情 + " " + 话;
+  const 时段 = 时段名(now.getHours());
+  const 盒 = document.getElementById("clockBox");
+  if (盒 && 盒.className !== "clock-box " + 时段) 盒.className = "clock-box " + 时段;
+  // 运行时长（从 2026-08-20 建站起算）
+  const 差 = now.getTime() - 建站时刻;
+  const 天 = Math.floor(差 / 86400000);
+  const 余 = 差 % 86400000;
+  document.getElementById("wUptime").textContent =
+    天 + "天 " + 补零(Math.floor(余 / 3600000)) + ":" + 补零(Math.floor(余 % 3600000 / 60000)) + ":" + 补零(Math.floor(余 % 60000 / 1000));
+  // 跨天时重绘日历
+  const 今天 = now.toDateString();
+  if (今天 !== 上次日期) { 上次日期 = 今天; 渲染日历(); }
+}
+滴答();
+setInterval(滴答, 1000);

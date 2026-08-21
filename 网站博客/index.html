@@ -166,6 +166,7 @@
         <div class="stat-row"><span>今日浏览</span><b id="wTodayPV">-</b></div>
         <div class="stat-row"><span>累计来访</span><b id="wTotalUV">-</b></div>
         <div class="stat-row"><span>当前在线</span><b id="wOnline">-</b></div>
+        <div class="stat-row"><span>运行时长</span><b id="wUptime" class="uptime">-</b></div>
       </div>
       <p class="widget-note">数字实时刷新，同一天同一访客只计一次</p>
     </div>
@@ -190,7 +191,18 @@
     </div>
 
     <div class="widget">
-      <div class="widget-head"><span class="wicon">📆</span><span class="widget-title">日历</span></div>
+      <div class="widget-head"><span class="wicon">🕐</span><span class="widget-title">时间日历</span></div>
+      <div class="clock-box night" id="clockBox">
+        <div class="clock-bg">
+          <span class="bg-morning" style="background-image:url('/图鉴/1787245496740.jpeg')"></span>
+          <span class="bg-noon" style="background-image:url('/图鉴/1787245426080.jpeg')"></span>
+          <span class="bg-evening" style="background-image:url('/图鉴/1787245535482.png')"></span>
+          <span class="bg-night" style="background-image:url('/图鉴/1787245577546.png')"></span>
+        </div>
+        <div class="clock" id="clock">--:--:--</div>
+        <div class="clock-date" id="clockDate"></div>
+        <div class="clock-greet" id="clockGreet"></div>
+      </div>
       <div class="calendar">
         <div class="cal-head" id="calHead"></div>
         <div class="weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
