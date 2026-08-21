@@ -53,11 +53,12 @@ async function 刷新统计() {
 刷新统计();
 setInterval(刷新统计, 10000);
 
-// 音乐卡：三曲歌单 + 黑胶旋转 + 均衡器
+// 音乐卡：四曲歌单 + 黑胶旋转 + 均衡器（加固版：防连点竞态，失败可见提示）
 const 歌单 = [
   { 名: "讨厌", 手: "芮恩", 文件: "music/讨厌 - 芮恩.mp3" },
   { 名: "无尽幸福", 手: "北也", 文件: "music/无尽幸福 - 北也.mp3" },
   { 名: "The one", 手: "栗子养乐多 / WhyAce / Zy", 文件: "music/The one - 栗子养乐多、WhyAce、Zy.mp3" },
+  { 名: "甲乙丙丁", 手: "李佳薇", 文件: "music/甲乙丙丁 - 李佳薇.mp3" },
 ];
 const bgm = document.getElementById("bgm");
 const vinyl = document.getElementById("vinyl");
@@ -65,6 +66,7 @@ const eq = document.getElementById("eq");
 const playBtn = document.getElementById("playBtn");
 const 列表 = document.getElementById("musicList");
 let 当前 = -1;
+let 代数 = 0;   // 每次切歌 +1：过期的异步回调一律作废，防止连点时状态乱跳
 
 // 渲染歌单
 歌单.forEach((s, i) => {
@@ -87,11 +89,13 @@ function 暂停态() {
 function 载入(i) {
   当前 = (i + 歌单.length) % 歌单.length;
   const s = 歌单[当前];
+  const 代 = ++代数;
   bgm.src = s.文件;
   document.getElementById("musicTitle").textContent = s.名;
   document.getElementById("musicArtist").textContent = s.手;
   高亮();
-  bgm.play().then(播放态).catch(暂停态);
+  bgm.play().then(() => { if (代 === 代数) 播放态(); })
+            .catch(() => { if (代 === 代数) 暂停态(); });
 }
 playBtn.addEventListener("click", () => {
   if (当前 < 0) { 载入(0); return; }
@@ -101,6 +105,12 @@ playBtn.addEventListener("click", () => {
 document.getElementById("prevBtn").addEventListener("click", () => 载入(当前 - 1));
 document.getElementById("nextBtn").addEventListener("click", () => 载入(当前 + 1));
 bgm.addEventListener("ended", () => 载入(当前 + 1));   // 播完自动下一首
+bgm.addEventListener("error", () => {                  // 真的加载失败时给出可见提示
+  暂停态();
+  const t = document.getElementById("musicTitle");
+  const 名 = decodeURIComponent((bgm.src || "").split("/").pop() || "");
+  if (t) t.textContent = "播放失败: " + 名;
+});
 
 // 迷你日历：本月 + 今天高亮
 function 渲染日历() {
