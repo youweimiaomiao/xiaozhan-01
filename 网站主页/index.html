@@ -96,16 +96,30 @@ if (document.documentElement.classList.contains("want-light")) {
     </div>
   </section>
 
-  <!-- 时间线 -->
-  <section id="timeline">
-    <h2 class="sec-title">🕰️ 建站时间线</h2>
-    <div class="tl">
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-16</b> — 第一次更新</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-17</b> — 收藏了部分鲸鱼娘皮肤</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-20</b> — deepseek大肥鱼功能升级：眼睛/嗓子/耳朵/画笔，全部免费开源</div></div>
-      <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><b>2026-08-20</b> — 网页版上线服务器</div></div>
-      <div class="tl-item"><div class="tl-dot now"></div><div class="tl-body"><b>今天</b> — youweimiao.com 正式挂牌营业 🎉</div></div>
+  <!-- 访客日历 -->
+  <section id="visitors">
+    <h2 class="sec-title">📅 今日小站访客</h2>
+    <p class="sec-sub">像日历一样挂在这里，每 10 秒自动更新</p>
+    <div class="vstats">
+      <div class="vstat">
+        <div class="vnum" id="vTodayUV">…</div>
+        <div class="vlabel">今日来访 · 人</div>
+      </div>
+      <div class="vstat">
+        <div class="vnum" id="vTodayPV">…</div>
+        <div class="vlabel">今日浏览 · 次</div>
+      </div>
+      <div class="vstat">
+        <div class="vnum" id="vTotalUV">…</div>
+        <div class="vlabel">累计来访 · 人</div>
+      </div>
+      <div class="vstat">
+        <div class="vnum" id="vTotalPV">…</div>
+        <div class="vlabel">累计浏览 · 次</div>
+      </div>
     </div>
+    <div class="vweek" id="vweek"></div>
+    <p class="vnote">同一天同一访客只计一次 · 只存哈希不存明文 IP · 由大肥鱼后端计数 🐟</p>
   </section>
 
   <!-- 图鉴墙 -->

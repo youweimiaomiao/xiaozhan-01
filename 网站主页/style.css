@@ -119,16 +119,32 @@ section { margin-bottom: 56px; }
 .pcard p { color: var(--dim); font-size: 14px; flex: 1; }
 .pcard .go { color: var(--accent2); font-size: 14px; font-weight: 600; }
 
-/* 时间线 */
-.tl { position: relative; margin-left: 8px; padding-left: 26px; border-left: 2px solid var(--line); }
-.tl-item { position: relative; margin-bottom: 22px; }
-.tl-dot {
-  position: absolute; left: -33px; top: 6px; width: 12px; height: 12px;
-  border-radius: 50%; background: var(--card); border: 2px solid var(--accent);
+/* 访客日历 */
+.vstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.vstat {
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  padding: 18px 10px; text-align: center;
 }
-.tl-dot.now { background: var(--accent2); border-color: var(--accent2); box-shadow: 0 0 12px var(--accent2); }
-.tl-body { color: var(--dim); font-size: 15px; }
-.tl-body b { color: var(--accent2); }
+.vnum {
+  font-size: 34px; font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), var(--pink));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.vlabel { color: var(--dim); font-size: 13px; margin-top: 6px; }
+.vweek { display: flex; gap: 10px; justify-content: space-between; align-items: flex-end; padding: 14px 8px 0; border-top: 1px dashed var(--line); }
+.vday { flex: 1; text-align: center; }
+.vd-num { font-size: 14px; font-weight: 700; color: var(--accent2); margin-bottom: 4px; }
+.vd-bars { display: flex; gap: 3px; justify-content: center; align-items: flex-end; height: 72px; }
+.vd-bar { width: 10px; border-radius: 4px 4px 2px 2px; transition: height .6s ease; }
+.vd-bar.uv { background: linear-gradient(180deg, var(--accent), #6f5fe0); }
+.vd-bar.pv { background: linear-gradient(180deg, var(--pink), #d45a9e); opacity: .75; }
+.vd-date { color: var(--dim); font-size: 12px; margin-top: 6px; line-height: 1.5; }
+.vday.today .vd-date { color: var(--accent2); font-weight: 700; }
+.vnote { text-align: center; color: var(--dim); font-size: 12px; margin-top: 14px; }
+@media (max-width: 720px) {
+  .vstats { grid-template-columns: repeat(2, 1fr); }
+  .vd-bar { width: 7px; }
+}
 
 /* 关于 */
 .about-box {
