@@ -1,0 +1,131 @@
+/* 老博客：深色玻璃拟态风格（版式与装饰语言参考 halfcity.top） */
+:root {
+  --bg: #0e1016;
+  --card: rgba(255, 255, 255, .045);
+  --line: rgba(255, 255, 255, .09);
+  --text: #e6e8ee;
+  --dim: #9aa1b2;
+  --primary: #8f7bff;
+  --pink: #f472b6;
+  --radius: 20px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 顶栏：固定 + 毛玻璃 */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 5vw;
+  background: color-mix(in srgb, var(--bg) 68%, transparent);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font-weight: 800; font-size: 17px; color: var(--text); text-decoration: none; }
+.navlinks a {
+  color: var(--dim); text-decoration: none; font-size: 14px; margin-left: 22px;
+  transition: color .25s;
+}
+.navlinks a:hover { color: var(--primary); }
+
+/* 横幅：Ken Burns 动态背景 + 打字机副标题 */
+.banner {
+  position: relative; height: 62vh; min-height: 430px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.banner-bg {
+  position: absolute; inset: -10%;
+  background: url('/图鉴/1787245577546.png') center / cover no-repeat;
+  filter: brightness(.38) saturate(1.15);
+  animation: kenburns 22s ease-in-out infinite alternate;
+}
+.banner::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(14, 16, 22, .3) 0%, rgba(14, 16, 22, .55) 55%, var(--bg) 100%);
+}
+@keyframes kenburns {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.14) translate(1.5%, -1.5%); }
+}
+.banner-inner { position: relative; z-index: 2; text-align: center; padding: 0 5vw; animation: fadeInUp .8s ease both; }
+.banner-title {
+  font-size: clamp(34px, 6vw, 56px); font-weight: 900; letter-spacing: 1px;
+  background: linear-gradient(120deg, #ffffff, #c9b8ff 55%, var(--pink));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 4px 26px rgba(143, 123, 255, .35));
+}
+.banner-sub { margin-top: 16px; font-size: 17px; color: var(--dim); min-height: 1.6em; }
+.caret { color: var(--primary); animation: blink 1s steps(1) infinite; }
+.banner-meta { margin-top: 10px; font-size: 13px; color: var(--dim); opacity: .85; }
+.scroll-hint {
+  position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+  z-index: 2; color: var(--dim); font-size: 20px; animation: bob 2s ease-in-out infinite;
+}
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+
+/* 文章卡片流：上叠横幅下缘 */
+.grid {
+  max-width: 1080px; margin: -64px auto 0; padding: 0 5vw 60px;
+  position: relative; z-index: 3; display: grid; gap: 18px;
+}
+.post-card {
+  display: flex; border-radius: var(--radius); overflow: hidden;
+  background: var(--card); border: 1px solid var(--line);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  transition: transform .3s cubic-bezier(.4, 0, .2, 1), border-color .3s, box-shadow .3s;
+  animation: fadeInUp .7s ease both;
+}
+.post-card:nth-child(1) { animation-delay: .05s; }
+.post-card:nth-child(2) { animation-delay: .12s; }
+.post-card:nth-child(3) { animation-delay: .19s; }
+.post-card:nth-child(4) { animation-delay: .26s; }
+.post-card:nth-child(5) { animation-delay: .33s; }
+.post-card:nth-child(6) { animation-delay: .40s; }
+.post-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  box-shadow: 0 14px 44px -18px color-mix(in srgb, var(--primary) 50%, transparent);
+}
+.cover { flex: 0 0 300px; width: 300px; aspect-ratio: 2 / 1.15; object-fit: cover; }
+.content { flex: 1; padding: 24px 28px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12.5px; color: var(--dim); }
+.date { margin-right: 2px; }
+.tag {
+  padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line);
+  color: var(--dim); font-size: 12px; transition: all .25s; cursor: default;
+}
+.tag:hover { border-color: var(--primary); color: var(--primary); }
+.title { font-size: 23px; font-weight: 800; line-height: 1.4; }
+.title a { color: var(--text); text-decoration: none; transition: color .25s; }
+.title a:hover { color: var(--primary); }
+.excerpt { color: var(--dim); font-size: 14.5px; line-height: 1.75; }
+.enter {
+  margin-top: auto; align-self: flex-end;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--line); color: var(--text); text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; transition: all .3s cubic-bezier(.4, 0, .2, 1);
+}
+.enter:hover { background: var(--primary); border-color: var(--primary); color: #fff; transform: translateX(3px); }
+
+/* 页脚 */
+footer {
+  border-top: 1px solid var(--line); padding: 26px 5vw 34px;
+  text-align: center; color: var(--dim); font-size: 13px; line-height: 2.2;
+}
+footer a { color: var(--primary); text-decoration: none; }
+
+/* 手机端：封面改到顶上 */
+@media (max-width: 760px) {
+  .post-card { flex-direction: column; }
+  .cover { flex: none; width: 100%; aspect-ratio: 16 / 8; }
+  .content { padding: 20px 20px 22px; }
+  .title { font-size: 20px; }
+}
