@@ -89,44 +89,48 @@ function spy() {
 addEventListener("scroll", spy);
 spy();
 
-// 访客日历：打开页面记录一次(visit)，之后每 10 秒查询(stats+history)刷新
-// 为什么记录和查询分开：轮询若也走 visit，每次刷新都算一次浏览，PV 会虚高
+// 访客卡片：打开页面记录一次(visit)，之后每 10 秒查询(stats)刷新
+// 为什么记录和查询分开：轮询若也走 visit，每次刷新都算一次浏览，PV 会虚高；
+// 同时轮询本身就是"心跳"——后端据此统计当前在线人数
 async function 请求计数(路径) {
   const r = await fetch(路径, { cache: "no-store" });
   return r.json();
 }
 function 写数字(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
-function 更新今日(d) {
-  写数字("vTodayUV", d["今日来访"]); 写数字("vTodayPV", d["今日浏览"]);
-  写数字("vTotalUV", d["累计来访"]); 写数字("vTotalPV", d["累计浏览"]);
+function 运行天数() {
+  const 起始 = new Date("2026-08-20T00:00:00");
+  return Math.max(1, Math.floor((Date.now() - 起始.getTime()) / 86400000) + 1);
 }
-function 渲染周历(历史) {
-  const box = document.getElementById("vweek");
-  if (!box || !历史 || !历史.length) return;
-  const 最大 = Math.max(1, ...历史.map(d => Math.max(d["来访"], d["浏览"])));
-  box.innerHTML = "";
-  历史.forEach((d, i) => {
-    const 今天 = i === 历史.length - 1;
-    const 日 = document.createElement("div");
-    日.className = "vday" + (今天 ? " today" : "");
-    日.innerHTML =
-      '<div class="vd-num">' + d["来访"] + '</div>' +
-      '<div class="vd-bars">' +
-      '<div class="vd-bar uv" style="height:' + Math.max(4, Math.round(d["来访"] / 最大 * 100)) + '%" title="来访 ' + d["来访"] + ' 人"></div>' +
-      '<div class="vd-bar pv" style="height:' + Math.max(4, Math.round(d["浏览"] / 最大 * 100)) + '%" title="浏览 ' + d["浏览"] + ' 次"></div>' +
-      '</div>' +
-      '<div class="vd-date">' + d["星期"] + '<br>' + d["日期"] + '</div>';
-    box.appendChild(日);
-  });
+function 数字滚动(id, 目标) {  // 大数字滚动动画（easeOutCubic），到位后弹一下
+  const el = document.getElementById(id); if (!el) return;
+  const 当前 = parseInt(el.textContent) || 0;
+  if (当前 === 目标) return;
+  const 变化 = 目标 - 当前, 开始 = performance.now(), 时长 = 800;
+  function 帧(t) {
+    const p = Math.min(1, (t - 开始) / 时长);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(当前 + 变化 * e);
+    if (p < 1) { requestAnimationFrame(帧); return; }
+    el.textContent = 目标;
+    el.classList.add("pop");
+    setTimeout(() => el.classList.remove("pop"), 400);
+  }
+  requestAnimationFrame(帧);
+}
+function 更新今日(d) {
+  写数字("vTodayPV", d["今日浏览"]);
+  写数字("vTotalUV", d["累计来访"]);
+  写数字("vTotalPV", d["累计浏览"]);
+  写数字("vOnline", d["当前在线"] ?? 0);
+  写数字("vDays", 运行天数());
+  数字滚动("vTodayUV", d["今日来访"]);
 }
 async function 刷新访客() {
   try {
     const d = await 请求计数("/api/counter/stats");
     更新今日(d);
-    const h = await 请求计数("/api/counter/history");
-    渲染周历(h["历史"]);
   } catch (e) { /* 接口暂时不可用时静默，不影响页面 */ }
 }
-请求计数("/api/counter/visit").catch(() => {});
+请求计数("/api/counter/visit").then(更新今日).catch(() => {});
 刷新访客();
 setInterval(刷新访客, 10000);

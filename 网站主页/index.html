@@ -100,25 +100,20 @@ if (document.documentElement.classList.contains("want-light")) {
   <section id="visitors">
     <h2 class="sec-title">📅 今日小站访客</h2>
     <p class="sec-sub">像日历一样挂在这里，每 10 秒自动更新</p>
-    <div class="vstats">
-      <div class="vstat">
-        <div class="vnum" id="vTodayUV">…</div>
-        <div class="vlabel">今日来访 · 人</div>
+    <div class="vcard">
+      <div class="vbig-row">
+        <span class="vlive" title="服务在线">●</span>
+        <span class="vbig" id="vTodayUV">0</span>
+        <span class="vbig-unit">人</span>
       </div>
-      <div class="vstat">
-        <div class="vnum" id="vTodayPV">…</div>
-        <div class="vlabel">今日浏览 · 次</div>
-      </div>
-      <div class="vstat">
-        <div class="vnum" id="vTotalUV">…</div>
-        <div class="vlabel">累计来访 · 人</div>
-      </div>
-      <div class="vstat">
-        <div class="vnum" id="vTotalPV">…</div>
-        <div class="vlabel">累计浏览 · 次</div>
+      <div class="vsub">今日来访 · 当前在线 <b id="vOnline">0</b> 人</div>
+      <div class="vchips">
+        <span class="vchip">今日浏览 <b id="vTodayPV">0</b> 次</span>
+        <span class="vchip">累计来访 <b id="vTotalUV">0</b> 人</span>
+        <span class="vchip">累计浏览 <b id="vTotalPV">0</b> 次</span>
+        <span class="vchip">已运行 <b id="vDays">0</b> 天</span>
       </div>
     </div>
-    <div class="vweek" id="vweek"></div>
     <p class="vnote">同一天同一访客只计一次 · 只存哈希不存明文 IP · 由大肥鱼后端计数 🐟</p>
   </section>
 
