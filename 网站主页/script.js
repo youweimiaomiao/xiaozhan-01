@@ -134,3 +134,12 @@ async function 刷新访客() {
 请求计数("/api/counter/visit").then(更新今日).catch(() => {});
 刷新访客();
 setInterval(刷新访客, 10000);
+
+// 服务卡：从 fuwuka.html 动态加载（该文件含微信号和二维码，只放服务器、不进 GitHub 仓库）
+const 服务槽 = document.getElementById("fuwuSlot");
+if (服务槽) {
+  fetch("fuwuka.html", { cache: "no-store" })
+    .then(r => { if (!r.ok) throw 0; return r.text(); })
+    .then(html => { 服务槽.outerHTML = html; })
+    .catch(() => { 服务槽.remove(); });   // 拿不到就不显示，不影响页面
+}
