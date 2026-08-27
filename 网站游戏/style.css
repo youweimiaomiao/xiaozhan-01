@@ -1,0 +1,90 @@
+/* 深海割草小游戏样式 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: #04121f;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  overflow: hidden;
+}
+#wrap { position: relative; width: min(96vw, 170vh); }
+canvas {
+  display: block; width: 100%; border-radius: 14px;
+  box-shadow: 0 0 60px rgba(30, 144, 255, .25);
+  background: #0a2a4a;
+}
+.hidden { display: none !important; }
+
+/* HUD */
+#hud { position: absolute; inset: 0; pointer-events: none; padding: 14px 16px; }
+.hud-left { position: absolute; top: 14px; left: 16px; width: 240px; }
+.hud-right { position: absolute; top: 14px; right: 16px; display: flex; gap: 12px; }
+.hud-stat {
+  background: rgba(4, 18, 31, .6); border: 1px solid rgba(120, 200, 255, .25);
+  color: #bfe6ff; font-size: 13px; padding: 5px 12px; border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.hud-stat b { color: #fff; }
+.bar {
+  position: relative; height: 20px; border-radius: 10px; overflow: hidden;
+  background: rgba(4, 18, 31, .65); border: 1px solid rgba(120, 200, 255, .3);
+  margin-bottom: 8px;
+}
+.bar > div { height: 100%; width: 100%; transition: width .15s; }
+.bar.hp > div { background: linear-gradient(90deg, #ff6b81, #ff4757); }
+.bar.xp > div { background: linear-gradient(90deg, #1dd1a1, #10ac84); }
+.bar span {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
+.bar.xp b { color: #ffd32a; }
+
+/* 覆盖层 */
+.overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(6, 28, 50, .88), rgba(4, 16, 30, .96));
+  border-radius: 14px;
+}
+.m-title {
+  font-size: clamp(28px, 5vw, 44px); color: #fff;
+  text-shadow: 0 0 24px rgba(64, 169, 255, .8), 0 2px 6px rgba(0,0,0,.6);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.m-sub { color: #9fd8ff; font-size: 18px; }
+.m-tip { color: #7fb3d8; font-size: 14px; }
+.m-tip2 { color: #5a8aa8; font-size: 12px; }
+.btn {
+  pointer-events: auto; cursor: pointer; border: none; margin-top: 6px;
+  padding: 12px 38px; font-size: 18px; font-weight: 700; color: #fff;
+  background: linear-gradient(120deg, #1dd1a1, #10ac84);
+  border-radius: 999px; box-shadow: 0 6px 24px rgba(29, 209, 161, .4);
+  transition: transform .15s, box-shadow .15s; font-family: inherit;
+}
+.btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 10px 30px rgba(29, 209, 161, .55); }
+
+/* 升级卡 */
+.lu-title { color: #fff; font-size: 26px; text-shadow: 0 0 18px rgba(255, 211, 42, .7); }
+#cards { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.card {
+  width: 190px; padding: 18px 14px; border-radius: 16px; cursor: pointer;
+  background: rgba(14, 48, 80, .85); border: 1px solid rgba(120, 200, 255, .35);
+  color: #e8f6ff; transition: transform .15s, border-color .15s, box-shadow .15s;
+  pointer-events: auto;
+}
+.card:hover {
+  transform: translateY(-4px); border-color: #ffd32a;
+  box-shadow: 0 8px 26px rgba(255, 211, 42, .3);
+}
+.card .c-icon { font-size: 34px; }
+.card .c-name { font-size: 17px; font-weight: 800; margin: 6px 0 4px; color: #ffd32a; }
+.card .c-desc { font-size: 13px; color: #a8d4f0; line-height: 1.5; }
+
+/* 暂停 */
+#pauseTip {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 4; color: #fff; font-size: 22px; padding: 10px 26px;
+  background: rgba(4, 18, 31, .75); border-radius: 12px; border: 1px solid rgba(120, 200, 255, .3);
+}

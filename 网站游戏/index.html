@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>deepseek大肥鱼 · 深海割草小游戏</title>
+<meta name="description" content="纯 JS 零引擎的幸存者割草小游戏：走位、自动攻击、升级三选一。由幼薇喵与 AI 搭子大肥鱼制作。">
+<meta name="theme-color" content="#071b33">
+<link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="960" height="540"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="bar hp"><div id="hpFill"></div><span>❤️</span></div>
+      <div class="bar xp"><div id="xpFill"></div><span>✨ Lv.<b id="lv">1</b></span></div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-stat">⏱ <b id="time">0:00</b></div>
+      <div class="hud-stat">☠️ <b id="kills">0</b></div>
+      <div class="hud-stat">🏆 最高 <b id="best">0:00</b></div>
+    </div>
+  </div>
+
+  <!-- 开始界面 -->
+  <div id="menu" class="overlay">
+    <h1 class="m-title">🐋 deepseek大肥鱼</h1>
+    <p class="m-sub">深海割草小游戏</p>
+    <p class="m-tip">WASD / 方向键走位 · 自动攻击 · 吃 ✨ 升级三选一</p>
+    <button id="startBtn" class="btn">开始割草</button>
+    <p class="m-tip2">由 幼薇喵 与 AI 搭子大肥鱼 制作 · 纯 JS 零引擎，秒开</p>
+  </div>
+
+  <!-- 升级界面 -->
+  <div id="levelup" class="overlay hidden">
+    <h2 class="lu-title">🎉 升级了！三选一</h2>
+    <div id="cards"></div>
+  </div>
+
+  <!-- 结算界面 -->
+  <div id="over" class="overlay hidden">
+    <h1 class="m-title">🐟 被鱼群淹没啦</h1>
+    <p class="m-sub">存活 <b id="oTime">0:00</b> · 击杀 <b id="oKills">0</b> · 等级 <b id="oLv">1</b></p>
+    <p class="m-tip" id="newBest" style="display:none">🎊 新纪录！</p>
+    <button id="againBtn" class="btn">再来一局</button>
+  </div>
+
+  <!-- 暂停提示 -->
+  <div id="pauseTip" class="hidden">⏸ 已暂停（P 继续）</div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
