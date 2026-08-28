@@ -4,6 +4,10 @@
 const cv = document.getElementById("game");
 const ctx = cv.getContext("2d");
 const W = cv.width, H = cv.height;
+// 世界大小与摄像机：世界比屏幕大得多，摄像机跟随主角（世界坐标 + 视口偏移）
+const 世界宽 = 2400, 世界高 = 1600;
+const 视口 = { x: 0, y: 0 };
+const 索敌半径 = Math.hypot(W, H) / 2 + 120;   // 视野对角线的一半再多一点，出屏不远也能打
 
 // ---------- 界面元素 ----------
 const $ = id => document.getElementById(id);
@@ -33,9 +37,9 @@ function 载入图(名, 路径) {
 let P = null;
 function 初始玩家() {
   return {
-    x: W / 2, y: H / 2, r: 22, hp: 100, maxHp: 100,
-    速度: 235, 攻速系数: 1, 伤害: 12, 弹道: 1, 弹速: 460,
-    磁铁: 95, 经验加成: 1, 金币系数: 1, 受伤系数: 1, 回血: 0,
+    x: 世界宽 / 2, y: 世界高 / 2, r: 22, hp: 100, maxHp: 100,
+    速度: 250, 攻速系数: 1, 伤害: 12, 弹道: 1, 弹速: 500,
+    磁铁: 120, 经验加成: 1, 金币系数: 1, 受伤系数: 1, 回血: 0,
     xp: 0, 等级: 1, 冷却: 0, 无敌: 0, 面向: 1,
     金币: 0, 武器s: [], 道具s: [], 动画帧: 0, 动画计时: 0,
   };
@@ -90,9 +94,9 @@ let 商店机会 = 0, 下一个商店时刻 = 50;
 
 // ---------- 敌人类型 ----------
 const 敌型 = {
-  小鱼: { hp: 20, 速度: 95, 伤害: 8, xp: 1, 金币: [2, 3], r: 15, 颜色: "#2ecc71" },
-  水母: { hp: 62, 速度: 46, 伤害: 12, xp: 2, 金币: [4, 6], r: 21, 颜色: "#ff9ff3" },
-  海胆: { hp: 40, 速度: 72, 伤害: 10, xp: 2, 金币: [3, 5], r: 17, 颜色: "#a55eea" },
+  小鱼: { hp: 20, 速度: 95, 伤害: 8, xp: 1, 金币: [2, 4], r: 15, 颜色: "#2ecc71" },
+  水母: { hp: 62, 速度: 46, 伤害: 12, xp: 2, 金币: [5, 8], r: 21, 颜色: "#ff9ff3" },
+  海胆: { hp: 40, 速度: 72, 伤害: 10, xp: 2, 金币: [4, 6], r: 17, 颜色: "#a55eea" },
 };
 function 随机敌型() {
   const t = 计时;
@@ -104,12 +108,11 @@ function 随机敌型() {
 }
 function 生成敌人() {
   const 名 = 随机敌型(), d = 敌型[名];
-  const 边 = Math.floor(Math.random() * 4);
-  let x, y;
-  if (边 === 0) { x = Math.random() * W; y = -30; }
-  else if (边 === 1) { x = W + 30; y = Math.random() * H; }
-  else if (边 === 2) { x = Math.random() * W; y = H + 30; }
-  else { x = -30; y = Math.random() * H; }
+  // 在主角周围一圈"屏幕外"刷新（视角跟随之后，敌人从视野边缘冒出来才合理）
+  const 半径 = Math.hypot(W, H) / 2 + 60 + Math.random() * 120;
+  const 角 = Math.random() * Math.PI * 2;
+  const x = Math.max(20, Math.min(世界宽 - 20, P.x + Math.cos(角) * 半径));
+  const y = Math.max(20, Math.min(世界高 - 20, P.y + Math.sin(角) * 半径));
   const 强化 = 1 + 计时 / 90;
   敌人们.push({ 名, x, y, r: d.r, hp: d.hp * 强化, 伤害: d.伤害, 速度: d.速度 * (1 + 计时 / 300), xp: d.xp, 金币: d.金币, 抖动: Math.random() * 7 });
 }
@@ -302,7 +305,7 @@ function 最近敌人() {
     const d2 = (e.x - P.x) ** 2 + (e.y - P.y) ** 2;
     if (d2 < 距) { 距 = d2; 最 = e; }
   }
-  return 最 && 距 < 640 * 640 ? 最 : null;
+  return 最 && 距 < 索敌半径 * 索敌半径 ? 最 : null;
 }
 function 发射(类型, 角) {
   if (类型 === "单发") {
@@ -361,7 +364,10 @@ function 更新(dt) {
   const 移动中 = dx !== 0 || dy !== 0;
   const 长 = Math.hypot(dx, dy) || 1;
   P.x += dx / 长 * P.速度 * dt; P.y += dy / 长 * P.速度 * dt;
-  P.x = Math.max(20, Math.min(W - 20, P.x)); P.y = Math.max(20, Math.min(H - 20, P.y));
+  P.x = Math.max(20, Math.min(世界宽 - 20, P.x)); P.y = Math.max(20, Math.min(世界高 - 20, P.y));
+  // 摄像机跟随主角（限制在世界范围内，不露出界外黑边）
+  视口.x = Math.max(0, Math.min(世界宽 - W, P.x - W / 2));
+  视口.y = Math.max(0, Math.min(世界高 - H, P.y - H / 2));
   if (移动中) {
     P.动画计时 += dt;
     if (P.动画计时 > 0.16) { P.动画计时 = 0; P.动画帧 = (P.动画帧 + 1) % 3; }
@@ -375,7 +381,7 @@ function 更新(dt) {
 
   // 生成敌人
   生成冷却 -= dt;
-  const 间隔 = Math.max(0.3, 1.15 - 计时 / 240);
+  const 间隔 = Math.max(0.3, 1.0 - 计时 / 240);
   if (生成冷却 <= 0) { 生成敌人(); 生成冷却 = 间隔; }
 
   // 敌人
@@ -417,7 +423,7 @@ function 更新(dt) {
       }
     }
   }
-  子弹们 = 子弹们.filter(b => b.生命 > 0 && b.x > -30 && b.x < W + 30 && b.y > -30 && b.y < H + 30);
+  子弹们 = 子弹们.filter(b => b.生命 > 0 && b.x > -60 && b.x < 世界宽 + 60 && b.y > -60 && b.y < 世界高 + 60);
   // 声波
   for (const s of 声波们) {
     s.r += 220 * dt;
@@ -479,9 +485,13 @@ function 击杀敌人(e) {
 
 // ---------- 绘制 ----------
 function 绘制() {
-  if (素材["背景"]) ctx.drawImage(素材["背景"], 0, 0, W, H);
-  else { const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#0a3d6b"); g.addColorStop(1, "#04121f"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
-  ctx.fillStyle = "rgba(4,16,30,.25)"; ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-视口.x, -视口.y);   // 世界坐标 → 屏幕坐标
+
+  // 背景：视差滚动（背景移动速度是世界的 70%，有"深处"的感觉）
+  if (素材["背景"]) ctx.drawImage(素材["背景"], 视口.x * 0.7, 视口.y * 0.7, W, H);
+  else { const g = ctx.createLinearGradient(视口.x, 视口.y, 视口.x, 视口.y + H); g.addColorStop(0, "#0a3d6b"); g.addColorStop(1, "#04121f"); ctx.fillStyle = g; ctx.fillRect(视口.x, 视口.y, W, H); }
+  ctx.fillStyle = "rgba(4,16,30,.25)"; ctx.fillRect(视口.x, 视口.y, W, H);
 
   for (const g of 金币们) {
     ctx.beginPath(); ctx.arc(g.x, g.y, 6, 0, 7); ctx.fillStyle = "#ffd32a"; ctx.fill();
@@ -527,6 +537,7 @@ function 绘制() {
     ctx.fillStyle = f.色; ctx.fillText(f.字, f.x, f.y);
   }
   ctx.globalAlpha = 1;
+  ctx.restore();   // 结束世界坐标系（回到屏幕坐标）
 }
 function 画精灵(img, x, y, 尺寸, 转) {
   ctx.save(); ctx.translate(x, y); ctx.rotate(转);
