@@ -107,6 +107,7 @@ section { margin-bottom: 56px; }
 
 /* 门户卡片 */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+#fuwuSlot { display: none; }  /* 服务卡槽位：未注入前不占位，防止出现"空卡片" */
 .pcard {
   display: flex; flex-direction: column; gap: 8px;
   background: var(--card); border: 1px solid var(--line); border-radius: 16px;

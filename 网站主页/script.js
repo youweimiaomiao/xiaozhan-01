@@ -1,5 +1,15 @@
 // ===== youweimiao.com 主页脚本 =====
 
+// 服务卡：最先执行，从 fuwuka.html 动态加载（该文件含微信号和二维码，只放服务器、不进 GitHub 仓库）
+// 放在最前面是为了：哪怕后面任何代码出错，服务卡也能正常渲染
+const 服务槽 = document.getElementById("fuwuSlot");
+if (服务槽) {
+  fetch("fuwuka.html", { cache: "no-store" })
+    .then(r => { if (!r.ok) throw 0; return r.text(); })
+    .then(html => { 服务槽.outerHTML = html; })
+    .catch(() => { 服务槽.remove(); });   // 拿不到就不显示，不影响页面
+}
+
 // 打字机效果
 const WORDS = ["在写代码", "在打游戏", "在学运维", "在折腾 AI", "在把想法搬到公网", "在等你来逛"];
 const tw = document.getElementById("typewriter");
@@ -134,12 +144,3 @@ async function 刷新访客() {
 请求计数("/api/counter/visit").then(更新今日).catch(() => {});
 刷新访客();
 setInterval(刷新访客, 10000);
-
-// 服务卡：从 fuwuka.html 动态加载（该文件含微信号和二维码，只放服务器、不进 GitHub 仓库）
-const 服务槽 = document.getElementById("fuwuSlot");
-if (服务槽) {
-  fetch("fuwuka.html", { cache: "no-store" })
-    .then(r => { if (!r.ok) throw 0; return r.text(); })
-    .then(html => { 服务槽.outerHTML = html; })
-    .catch(() => { 服务槽.remove(); });   // 拿不到就不显示，不影响页面
-}
