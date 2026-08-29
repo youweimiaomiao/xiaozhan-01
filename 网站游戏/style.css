@@ -25,6 +25,8 @@ canvas {
   backdrop-filter: blur(4px);
 }
 .hud-stat b { color: #fff; }
+.hud-btn { cursor: pointer; pointer-events: auto; transition: border-color .15s, background .15s; }
+.hud-btn:hover { border-color: #ffd32a; background: rgba(255, 211, 42, .12); }
 .bar {
   position: relative; height: 20px; border-radius: 10px; overflow: hidden;
   background: rgba(4, 18, 31, .65); border: 1px solid rgba(120, 200, 255, .3);

@@ -12,6 +12,7 @@ const 索敌半径 = Math.hypot(W, H) / 2 + 120;   // 视野对角线的一半�
 // ---------- 界面元素 ----------
 const $ = id => document.getElementById(id);
 const hud = $("hud"), menu = $("menu"), levelup = $("levelup"), over = $("over");
+const 升级层 = levelup;
 const cardsBox = $("cards"), pauseTip = $("pauseTip");
 const 商店层 = $("shop"), 货架 = $("shopShelf"), 出售区 = $("shopBag"), 商店金币 = $("shopGold");
 const 面板层 = $("panel"), 面板属性 = $("panelStats"), 面板武器 = $("panelWeapons"), 面板道具 = $("panelItems");
@@ -87,10 +88,12 @@ function 升到下一级() { return 8 + P.等级 * 7; }
 
 // ---------- 世界状态 ----------
 let 敌人们 = [], 子弹们 = [], 宝石们 = [], 金币们 = [], 粒子们 = [], 飘字们 = [], 声波们 = [];
-let 计时 = 0, 击杀 = 0, 生成冷却 = 0, 状态 = "menu";   // menu | playing | levelup | shop | panel | pausemenu | over
+let 计时 = 0, 击杀 = 0, 生成冷却 = 0, 状态 = "menu";   // menu | playing | upgrade | shop | panel | pausemenu | over
 let 暂停 = false;
 let 按键 = new Set();
 let 商店机会 = 0, 下一个商店时刻 = 50;
+let 升级机会 = 0;            // 升级次数累积，玩家随时按 T 进入升级界面
+let 覆盖前状态 = "playing";  // 打开菜单/面板/商店前记住来路，关闭时原路返回
 
 // ---------- 敌人类型 ----------
 const 敌型 = {
@@ -121,18 +124,20 @@ function 生成敌人() {
 addEventListener("keydown", e => {
   const k = e.key.toLowerCase();
   if (k === "escape") {
-    if (状态 === "playing") { 开菜单(); return; }
-    if (状态 === "shop" || 状态 === "panel" || 状态 === "pausemenu") { 关面板类(); return; }
+    // Esc 通吃所有界面：菜单里按 = 返回，其余任何界面按 = 跳菜单
+    if (状态 === "pausemenu") { 关面板类(); return; }
+    if (状态 !== "menu") { 开菜单(); return; }
     return;
   }
   if (k === "p") { 切换暂停(); return; }
   if (k === "tab") {
     if (状态 === "panel") 关面板类();
-    else if (状态 === "playing") 开面板();
+    else if (状态 === "playing" || 状态 === "pausemenu") 开面板();
     return;
   }
   if (状态 !== "playing") return;
   if (k === "b") { 开商店(); return; }
+  if (k === "t") { 开升级面板(); return; }
   按键.add(k);
 });
 addEventListener("keyup", e => 按键.delete(e.key.toLowerCase()));
@@ -144,13 +149,20 @@ function 切换暂停() {
   pauseTip.classList.toggle("hidden", !暂停);
 }
 function 开菜单() {
+  覆盖前状态 = 状态;   // 记住来路（playing/over/shop/panel/upgrade 都可能）
+  暂停 = false;        // 消除 P 暂停，防止返回后还停着
   状态 = "pausemenu";
   $("pmShopCount").textContent = 商店机会;
+  $("pmUpCount").textContent = 升级机会;
   菜单商店项.style.opacity = 商店机会 > 0 ? "" : ".35";
   菜单商店项.style.pointerEvents = 商店机会 > 0 ? "" : "none";
+  const 菜单升级项 = $("pmUp");
+  菜单升级项.style.opacity = 升级机会 > 0 ? "" : ".35";
+  菜单升级项.style.pointerEvents = 升级机会 > 0 ? "" : "none";
   菜单层.classList.remove("hidden");
 }
 function 开面板() {
+  覆盖前状态 = 状态;
   状态 = "panel";
   渲染面板();
   面板层.classList.remove("hidden");
@@ -159,19 +171,25 @@ function 关面板类() {
   面板层.classList.add("hidden");
   商店层.classList.add("hidden");
   菜单层.classList.add("hidden");
-  状态 = "playing";
+  升级层.classList.add("hidden");
+  // 一律回到游戏；只有从死亡结算进来的，回到结算界面
+  状态 = 覆盖前状态 === "over" ? "over" : "playing";
+  if (状态 === "over") over.classList.remove("hidden");
 }
 $("pmResume").addEventListener("click", 关面板类);
-$("pmPanel").addEventListener("click", () => { 菜单层.classList.add("hidden"); 开面板(); });
-$("pmShop").addEventListener("click", () => { 菜单层.classList.add("hidden"); 开商店(); });
+$("pmPanel").addEventListener("click", () => { 开面板(); });
+$("pmShop").addEventListener("click", () => { 开商店(); });
+$("pmUp").addEventListener("click", () => { 开升级面板(); });
 $("pmQuit").addEventListener("click", () => { location.href = "/blog/"; });
 $("panelClose").addEventListener("click", 关面板类);
 $("shopClose").addEventListener("click", 关面板类);
+$("upBtn").addEventListener("click", 开升级面板);
 
 // ---------- 商店 ----------
 function 开商店() {
-  if (状态 !== "playing" || 商店机会 <= 0) return;
+  if ((状态 !== "playing" && 状态 !== "pausemenu") || 商店机会 <= 0) return;
   商店机会--;
+  覆盖前状态 = 状态;
   状态 = "shop";
   渲染商店();
   商店层.classList.remove("hidden");
@@ -260,6 +278,7 @@ function 开始() {
   敌人们 = []; 子弹们 = []; 宝石们 = []; 金币们 = []; 粒子们 = []; 飘字们 = []; 声波们 = [];
   计时 = 0; 击杀 = 0; 生成冷却 = 0; 暂停 = false;
   商店机会 = 0; 下一个商店时刻 = 50;
+  升级机会 = 0; 覆盖前状态 = "playing";
   menu.classList.add("hidden"); over.classList.add("hidden");
   levelup.classList.add("hidden"); pauseTip.classList.add("hidden");
   hud.classList.remove("hidden");
@@ -277,9 +296,8 @@ function 结束() {
   hud.classList.add("hidden");
 }
 
-// ---------- 经验升级三选一 ----------
-function 触发升级() {
-  状态 = "levelup";
+// ---------- 经验升级（攒次数，按 T 手动进入，不再自动暂停游戏） ----------
+function 渲染升级卡() {
   const 选 = [...升级池].sort(() => Math.random() - .5).slice(0, 3);
   cardsBox.innerHTML = "";
   选.forEach(u => {
@@ -288,13 +306,24 @@ function 触发升级() {
     c.innerHTML = `<div class="c-icon">${u.icon}</div><div class="c-name">${u.name}</div><div class="c-desc">${u.desc}</div>`;
     c.addEventListener("click", () => {
       u.f(P);
-      levelup.classList.add("hidden");
-      状态 = "playing";
-      P.xp -= 升到下一级(); P.等级++;
+      升级机会--;
+      P.等级++;
       刷新HUD();
+      if (升级机会 > 0) {
+        渲染升级卡();          // 还有次数就继续选，界面不关
+        levelup.classList.remove("hidden");
+      } else {
+        关面板类();            // 用完了原路返回（回游戏或回菜单）
+      }
     });
     cardsBox.appendChild(c);
   });
+}
+function 开升级面板() {
+  if ((状态 !== "playing" && 状态 !== "pausemenu") || 升级机会 <= 0) return;
+  覆盖前状态 = 状态;
+  状态 = "upgrade";
+  渲染升级卡();
   levelup.classList.remove("hidden");
 }
 
@@ -462,7 +491,13 @@ function 更新(dt) {
   }
   宝石们 = 宝石们.filter(g => !g.死);
   金币们 = 金币们.filter(g => !g.死);
-  while (P.xp >= 升到下一级()) { 触发升级(); break; }
+  if (P.xp >= 升到下一级()) {
+    P.xp -= 升到下一级();
+    升级机会++;
+    while (P.xp >= 升到下一级()) { P.xp -= 升到下一级(); 升级机会++; }
+    飘字(P.x, P.y - 44, "🎉 升级机会 +1 (T)", "#1dd1a1");
+    刷新HUD();
+  }
 
   // 粒子与飘字
   for (const pa of 粒子们) { pa.x += pa.vx * dt; pa.y += pa.vy * dt; pa.生命 -= dt; }
@@ -565,6 +600,7 @@ function 刷新HUD() {
   $("lv").textContent = P.等级;
   $("gold").textContent = P.金币;
   $("shopChances").textContent = 商店机会;
+  $("upChances").textContent = 升级机会;
 }
 
 requestAnimationFrame(帧);

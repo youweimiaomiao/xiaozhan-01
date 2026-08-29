@@ -7,7 +7,7 @@
 <meta name="description" content="纯 JS 零引擎的幸存者割草小游戏：走位、多武器、商店、升级三选一。由幼薇喵与 AI 搭子大肥鱼制作。">
 <meta name="theme-color" content="#071b33">
 <link rel="icon" href="/favicon.png">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div id="wrap">
@@ -24,9 +24,10 @@
       <div class="hud-stat">☠️ <b id="kills">0</b></div>
       <div class="hud-stat">💰 <b id="gold">0</b></div>
       <div class="hud-stat">🛒 <b id="shopChances">0</b> 次</div>
+      <div class="hud-stat hud-btn" id="upBtn" title="打开升级界面 (T)">🎉 <b id="upChances">0</b> 次</div>
       <div class="hud-stat">🏆 最高 <b id="best">0:00</b></div>
     </div>
-    <div class="hud-hint">B 商店 · Tab 背包 · Esc 菜单 · P 暂停</div>
+    <div class="hud-hint">T 升级 · B 商店 · Tab 背包 · Esc 菜单 · P 暂停</div>
   </div>
 
   <!-- 开始界面 -->
@@ -40,8 +41,9 @@
 
   <!-- 升级界面 -->
   <div id="levelup" class="overlay hidden">
-    <h2 class="lu-title">🎉 升级了！三选一</h2>
+    <h2 class="lu-title">🎉 升级强化！三选一</h2>
     <div id="cards"></div>
+    <p class="m-tip">选完还有次数会继续三选一 · Esc 回菜单（次数保留）</p>
   </div>
 
   <!-- 商店 -->
@@ -85,10 +87,11 @@
     <div class="menu-list">
       <button id="pmResume" class="menu-btn">▶ 返回游戏</button>
       <button id="pmPanel" class="menu-btn">📜 属性与背包</button>
+      <button id="pmUp" class="menu-btn">🎉 升级强化（剩余 <b id="pmUpCount">0</b> 次）</button>
       <button id="pmShop" class="menu-btn">🛒 进入商店（剩余 <b id="pmShopCount">0</b> 次）</button>
       <button id="pmQuit" class="menu-btn danger">🚪 退出游戏（回博客）</button>
     </div>
-    <p class="m-tip">操作：WASD 移动 · B 商店 · Tab 背包 · P 暂停</p>
+    <p class="m-tip">操作：WASD 移动 · T 升级 · B 商店 · Tab 背包 · P 暂停</p>
   </div>
 
   <!-- 结算界面 -->
@@ -102,6 +105,6 @@
   <!-- 暂停提示 -->
   <div id="pauseTip" class="hidden">⏸ 已暂停（P 继续）</div>
 </div>
-<script src="game.js?v=3"></script>
+<script src="game.js?v=4"></script>
 </body>
 </html>
